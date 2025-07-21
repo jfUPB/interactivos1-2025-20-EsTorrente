@@ -47,3 +47,5 @@ ___
 > 🌿PROCESO: El primer programa recibe el input de los botones físicos y acelerómetro en el micro:bit conectado, y controla la figura que se muestra en los LEDs. Al mismo tiempo, el segundo programa contiene una biblioteca que los comunica a ambos. Al obtener el input del primer programa, altera el color y la letra en el display con el círculo. Por otro lado, el segundo programa detecta el input de los botones virtuales y le manda una "h" al programa inicial, el cuál se encarga de mostrar el corazón y carita feliz en los LEDs.
 
 > 🌻OUTPUTS: LEDs, circulito del programa que cambia de color y muestra una letra.
+>
+> https://editor.p5js.org/EsTorrente/sketches/AWgfmq2NU
