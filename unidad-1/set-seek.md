@@ -179,5 +179,7 @@ function startAudio() {
 
 
 
-<img width="4222" height="812" alt="image" src="https://github.com/user-attachments/assets/2758cb53-7382-4736-84fd-2c77dafee596" />
+<img width="4222" height="812" alt="image" src="https://github.com/user-attachments/assets/2758cb53-7382-4736-84fd-2c77dafee596" />  
+
+PD: perdón si no participo mucho en esta clase o en sistemas computacionales. Soy muy penosa, pero me emociona mucho aprender de estos temas.
 
