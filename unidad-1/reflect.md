@@ -14,14 +14,14 @@
 > 🍂**PROCESO:** El programa procesa el input, identifica de qué botón viene, y envía un dato específico al programa p5.js. El programa p5.js recibe el dato enviado, filtra su tipo, y realiza los cálculos para mover el círculo. Esto se ejecuta cada frame.  
 > 🍁**OUTPUT:** En la pantalla del editor de p5.js, se puede observar la imagen del círculo dibujado y los respectivos cambios a su color y posición.  
 
-🌼**¿Cuál es la función de la línea uart.write('A') en el código del micro:bit y qué función en p5.js se encarga de “escuchar” ese mensaje?**  
+🌼 **¿Cuál es la función de la línea uart.write('A') en el código del micro:bit y qué función en p5.js se encarga de “escuchar” ese mensaje?**  
 > Su función es enviar un caracter al programa de p5.js que le permita identificar que el botón A está siendo presionado, y que pueda ejecutar la acción asignada La función que se encarga de escuchar a ese mensaje es:   
   > `if (dataRx == "A"){}`, que pasa el filtro identificando el caracter.  
 
-🌻¿Cuál es la diferencia fundamental entre el arte/diseño tradicional y el arte/diseño generativo?
+🌻 **¿Cuál es la diferencia fundamental entre el arte/diseño tradicional y el arte/diseño generativo?**
 > Que la tecnología juega un papel principal o equitativo frente al rol activo del humano involucrado. En el arte tradicional, la persona utiliza herramientas para conseguir el producto final... pero todas las decisiones son tomadas por el humano (como en qué dirección mover el pincel, qué color usar...). En comparación, en el arte generativo se le cierto nivel de libertad y autonomía a la máquina, cediendo parte del control (a pesar de que siempre sigue unas reglas básicas establecidas). 
 
-🍃Imagina que quieres que un círculo en p5.js cambie a un color aleatorio cada vez que sacudes el micro:bit. Describe qué tendrías que programar en el micro:bit y qué tendrías que programar en p5.js para lograrlo. 
+🍃**Imagina que quieres que un círculo en p5.js cambie a un color aleatorio cada vez que sacudes el micro:bit. Describe qué tendrías que programar en el micro:bit y qué tendrías que programar en p5.js para lograrlo.** 
 > 1. Importar la biblioteca de funciones necesarias en el programa de micro:bit
 > 2. Iniciar la comunicación serial con el badwith establecido (no recuerdo el número)
 > 3. Usar un display.show para mostrar una imagen que confirme que el programa ha sido cargado correctamente en el micro:bit
@@ -47,3 +47,47 @@ ___
 
 🌻El tutorial de la Actividad 05 te llevó paso a paso. ¿Cómo te sentiste con ese método de aprendizaje? ¿Te dio seguridad o preferirías haberlo intentado por tu cuenta desde el principio?
 > Me gustó mucho ir paso a paso, pero me gustó aún más que se mostrara el error. Siento que es una buena manera de aprender a no fiarse simplemente de las instrucciones dadas, copiar y pegar... sino realmente comprender qué estamos escribiendo y predecir antes de ejecutar si el programa funcionará (como nos han enseñado).
+  
+___
+### 📝 Actividad 08
+🌱 *ACTIVIDAD 1: [5]/5*  
+Comentarios:  
+> 🐟 Las respuestas son completas, claras y concisas.
+ 
+🌿 *ACTIVIDAD 2: [5]/5*  
+Comentarios:  
+> 🐟 Las respuestas son claras. Hace falta mencionar que el sistema tiene cierto grado de autonomía en el proceso, pero todo lo demás es completamente claro.
+ 
+🌱 *ACTIVIDAD 3: [5]/5*  
+Comentarios:  
+> 🐟 Los inputs, outputs y el proceso están descritos claramente y no omiten ninguno de los componentes.
+ 
+🌿 *ACTIVIDAD 4: [5]/5*  
+Comentarios:  
+> 🐟 El programa es increíblemente creativo, interesante, y cumple con todos los requisitos solicitados. Demuestra un nivel superior de interés por la temática, y un gran entendimiento del simulador y código.
+ 
+=======================
+ 
+🌱 *ACTIVIDAD 5: [5]/5*  
+Comentarios:  
+> 🐟 La explicación es detallada y cumple con todos los requisitos. Se explica claramente el envío constante del estado del botón A, la lectura en cada frame de aquel dato y cómo esto afecta el color del cuadrado.
+ 
+🌿 *ACTIVIDAD 6: [5]/5*  
+Comentarios:  
+> 🐟 El código es funcional y se hace entrega de todos los elementos solicitados.
+___
+### 📝 Actividad 09
+**🌱Continuar: ¿Qué actividad, video o ejemplo de esta unidad te resultó más inspirador o te ayudó más a entender el potencial de los sistemas físicos interactivos?**
+> La de el chico tocando batería. Me gustó demasiado el hecho de que el humano seguía teniendo igual cantidad de participación que el programa. Más que simplemente escribir algunas líneas de código y dejar que las obras de arte las haga la máquina mientras espero, me encanta la idea de que sea una colaboración más activa.
+
+**🌿Dejar de hacer: ¿Hubo alguna parte que te pareció demasiado abstracta, muy rápida o confusa? ¿Hay algo que crees que podríamos cambiar para que sea más claro?**
+> No, todo fue supremamente claro.
+
+**🌼Empezar a hacer: ¿Qué te genera más curiosidad ahora? ¿Te gustaría explorar más sensores del micro:bit (luz, temperatura), crear visualizaciones más complejas en p5.js o ver más ejemplos de proyectos artísticos?**
+> Rotundo sí a todo. 
+
+**🌻Balance inspiración vs. técnica: ¿Cómo sentiste el equilibrio entre ver los videos inspiradores de la Actividad 01 y la parte técnica de conectar las herramientas en las actividades 03-06?**
+> Perfecta. Considero que esa inspiración sí es totalmente necesaria para darse una idea de todo lo que podría ser posible. Ayuda a reducir un poco el miedo de trabajar con sistemas desconocidos, reemplazándolo por curiosidad.
+
+**🌱Comentario adicional: ¿Hay algo más que quieras compartir sobre tu experiencia en esta unidad introductoria?**
+> Me encantó trabajar con el micro:bit. Siento que es simple, amigable, muy novedoso y ofrece bastantes posibilidades.
