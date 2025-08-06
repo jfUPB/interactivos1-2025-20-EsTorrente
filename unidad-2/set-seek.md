@@ -168,10 +168,35 @@ Ahora, en update(self) del semáforo:
 ___
 ### 📝Actividad 03  
 🌱 Explica por qué decimos que este programa permite realizar de manera concurrente varias tareas.  
-> 
+> Como no usa muchas funciones pesadas ni espera Sleep() largos, no sobrecarga al micro:bit. La CPU no está ocupada haciendo solo una cosa mientras podría estar revisando otras. Puede checkear todo el rato si un botón está siendo presionado, al mismo tiempo que revisa si el tiempo estipulado ha pasado y en cuál estado está.
 
+    
 🌿 Identifica los estados, eventos y acciones en el programa.  
+> 1. 🍃`INIT:`  
+>    - **EVENTOS**: no hay.  
+>    - **ACCIONES**: mostrar carita feliz, actualizar el tiempo del último cambio de estado, settear el intervalo de happy y cambiar estado a happy.  
+>   
+> 2. 🍂`HAPPY:`  
+>    - **EVENTOS**: que el tiempo actual - tiempo del último cambio de estado > que el intervalo de smile // que se presione el botón A.  
+>    - **ACCIONES**: mostrar carita triste si se presionó el botón o sonrisa si se superó el intervalo, settear el intervalo y el estado correspondiente.
 >
+> 3. 🍁`SMILE:`  
+>    - **EVENTOS**: que el tiempo actual - tiempo del último cambio de estado > que el intervalo de happy // que se presione el botón A.  
+>    - **ACCIONES**: mostrar carita feliz si se presionó el botón o carita triste si se superó el intervalo, settear el intervalo y el estado correspondiente.
+>
+> 4. 🍃`SAD:`  
+>    - **EVENTOS**: que el tiempo actual - tiempo del último cambio de estado > que el intervalo de sad // que se presione el botón A.  
+>    - **ACCIONES**: mostrar sonrisa si se presionó el botón o carita feliz si se superó el intervalo, settear el intervalo y el estado correspondiente.
 
+    
 🌼 Describe y aplica al menos 3 vectores de prueba para el programa. Para definir un vector de prueba debes llevar al sistema a un estado, generar los eventos y observar el estado siguiente y las acciones que ocurrirán. Por tanto, un vector de prueba tiene unas condiciones iniciales del sistema, unos resultados esperados y los resultados realmente obtenidos. Si el resultado obtenido es igual al esperado entonces el sistema pasó el vector de prueba, de lo contrario el sistema puede tener un error.  
+> 🍃 `PRIMER VECTOR:` **darle play y no hacer absolutamente nada.** El programa empieza en INIT, pasa a happy. La diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo happy, por lo que cambia a smile. La diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo smile, por lo que cambia a sad. La diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo sad, por lo que cambia a happy. Se repite en ciclo. El programa funciona, pasa lo mismo al ejecutarlo que en lo esperado en el diagrama. :D
 >
+> 🍂 `SEGUNDO VECTOR:` **darle play y no hacer absolutamente nada en happy, pero presionar A cuando esté en sad una sola vez.** El programa empieza en INIT, pasa a happy. La diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo happy, por lo que cambia a smile. La diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo smile, por lo que cambia a sad. Presiono A y vuelve a cambiar a smile. Como no vuelvo a presionarlo, la diferencia entre el tiempo actual y el tiempo desde el último cambio sobrepasa el valor del intervalo sad, por lo que cambia a happy. El programa funciona, pasa lo mismo al ejecutarlo que en lo esperado en el diagrama. :)
+>
+> 🍁 `TERCER VECTOR:` **presionar A en cada estado:** El programa empieza en INIT, pasa a happy. Presiono A, salta a estado sad. Presiono A, pasa a estado smile. Presiono A, pasa a estado happy. El programa funciona, pasa lo mismo al ejecutarlo que en lo esperado en el diagrama. :>
+  
+**OBSERVACIÓN:** al inicio me salía un error. Es porque en la línea 49 faltaba un espacio.
+
+
+
