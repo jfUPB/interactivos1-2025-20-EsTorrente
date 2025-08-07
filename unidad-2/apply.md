@@ -2,6 +2,10 @@
 
 ## 🛠 Fase: Apply
 
+### 📝 Actividad 04
+
+___
+︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶  
 ### 📝 Actividad 05
 
 ```bomba.py
@@ -33,6 +37,7 @@ while True:
         #sumarle al counter
         if button_a.was_pressed():
             if counter < 60000:
+                music.pitch(400, 100)
                 display.show(Image.MEH)
                 sleep(400)
                 counter+=1000
@@ -44,6 +49,7 @@ while True:
         #restarle al counter    
         elif button_b.was_pressed():
             if counter > 10000:
+                music.pitch(200, 100)
                 display.show(Image.SURPRISED)
                 sleep(400)
                 counter-=1000
@@ -55,18 +61,20 @@ while True:
         #armar la bomba
         elif accelerometer.was_gesture('shake'):
             display.show(Image.ANGRY)
-            display.scroll('BOMB ARMED', delay=100)
+            music.pitch(200, 200)
+            display.scroll('BOMB ARMED', delay=70)
             start_time = utime.ticks_ms()
             current_state = STATE_ARMED
 
     # BOMBA ARMADA
     if current_state == STATE_ARMED:
         time_left = utime.ticks_diff(counter,utime.ticks_diff(utime.ticks_ms(), start_time))
-        display.scroll(int(time_left/1000), delay=100)
+        display.scroll(int(time_left/1000), delay=60)
 
-        if time_left < 5:
-            music.play(music.BA_DING)
-
+        if time_left < 7000:
+            music.pitch(880, 50)
+        else:
+            music.pitch(400, 50)
 
         #check explotar
         if utime.ticks_diff(utime.ticks_ms(), start_time) > counter:
@@ -84,3 +92,19 @@ while True:
             current_state = STATE_CONFIG
 
 ```
+**VECTORES DE PRUEBA:**  
+︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶  
+
+    
+| :) | Estado inicial | Evento / acción del usuario | Predict de la salida | Estado final | funciona o no |
+|----|----------------|------------------------------|-------------------------------------|--------------|----|
+| 🌱  | `STATE_CONFIG`, contador = 20000 | presionar **A** | beep agudo (400 Hz), dibujito `MEH`, contador aumenta a 21000 | `STATE_CONFIG` | ✅ |
+| 🌿  | `STATE_CONFIG`, contador = 60000 | presionar **A** | dibujito de `CONFUSED`, mensajito “max reached” | `STATE_CONFIG` | ✅ |
+| ☘️  | `STATE_CONFIG`, contador = 20000 | presionar **B** | beep grave (200 Hz), dibujito `SURPRISED`, contador disminuye a 19000 | `STATE_CONFIG` | ✅ |
+| 🌼  | `STATE_CONFIG`, contador = 10000 | presionar **B** | dibujito `CONFUSED`, mensaje “min reached” | `STATE_CONFIG` | ✅ |
+| 🌻  | `STATE_CONFIG` | Agitar (shake), contador entre 10000 y 60000 | dibujito `ANGRY`, beep grave, mensaje “BOMB ARMED” | `STATE_ARMED` | ✅ |
+| 🍃  | `STATE_ARMED`, tiempo restante > 7s | tiempo_restante >= 7 | display muestra segundos, beep medio (400 Hz) cada ciclo | `STATE_ARMED` | ✅ |
+| 🍂  | `STATE_ARMED`, tiempo restante ≤ 7s | tiempo_restante < 7 | display muestra segundos, beep agudo (880 Hz) cada ciclo | `STATE_ARMED` | ✅ |
+| 🍁  | `STATE_ARMED`, tiempo restante = 0s | tiempo restante = 0 | suena marcha fúnebre, dibujito `SKULL`, mensajito “PRESS A TO RESTART” | `STATE_EXPLODE` | ✅ |
+| 🌱  | `STATE_EXPLODE` | presionar **A** | contador reiniciado a 20000, vuelve a configuración y el display muestra el tiempo | `STATE_CONFIG` | ✅ |
+
