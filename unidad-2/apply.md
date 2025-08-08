@@ -102,7 +102,7 @@ while True:
 ︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶  
 
     
-| :) | Estado inicial | Evento / acción del usuario | Predict de la salida | Estado final | funciona o no |
+| :) | ESTADO INICIAL | EVENTO / INPUT | PREDICT | ESTADO FINAL | FUNCIONA? |
 |----|----------------|------------------------------|-------------------------------------|--------------|----|
 | 🌱  | `STATE_CONFIG`, contador = 20000 | presionar **A** | beep agudo (400 Hz), dibujito `MEH`, contador aumenta a 21000 | `STATE_CONFIG` | ✅ |
 | 🌿  | `STATE_CONFIG`, contador = 60000 | presionar **A** | dibujito de `CONFUSED`, mensajito “max reached” | `STATE_CONFIG` | ✅ |
@@ -113,5 +113,6 @@ while True:
 | 🍂  | `STATE_ARMED`, tiempo restante = 8000 | tiempo_restante < 7000 | display muestra segundos, beep agudo (880 Hz) cada ciclo | `STATE_ARMED` | ✅ |
 | 🍁  | `STATE_ARMED`, tiempo restante = 1s | tiempo restante = 0 | suena marcha fúnebre, dibujito `SKULL`, mensajito “PRESS A TO RESTART” | `STATE_EXPLODE` | ✅ |
 | 🌱  | `STATE_EXPLODE` | presionar **A** | contador reiniciado a 20000, vuelve a configuración y el display muestra el tiempo | `STATE_CONFIG` | ✅ |
+
 
 
