@@ -3,11 +3,15 @@
 ## 🛠 Fase: Apply
 
 ### 📝 Actividad 04
+  
+<img width="1090" height="897" alt="image" src="https://github.com/user-attachments/assets/182ca611-d06f-4541-84e7-a9992708b100" />
 
-___
-︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶  
-### 📝 Actividad 05
+___  
 
+︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶⊹︶︶︶⊹︶︶   
+
+### 📝 Actividad 05  
+  
 ```bomba.py
 from microbit import *
 import utime
@@ -78,16 +82,18 @@ while True:
 
         #check explotar
         if utime.ticks_diff(utime.ticks_ms(), start_time) > counter:
+            display.show(Image.SKULL)
+            music.play(music.FUNERAL)
+            sleep(1500)
             current_state = STATE_EXPLODE
 
     # BOMBA EXPLOTA
     if current_state == STATE_EXPLODE:
-        music.play(music.FUNERAL)
-        display.show(Image.SKULL)
-        sleep(1500)
         display.scroll('PRESS A TO RESTART', delay=100)
 
         if button_a.was_pressed():
+            display.show(Image.HAPPY)
+            sleep(1500)
             counter = 20000
             current_state = STATE_CONFIG
 
@@ -103,8 +109,9 @@ while True:
 | ☘️  | `STATE_CONFIG`, contador = 20000 | presionar **B** | beep grave (200 Hz), dibujito `SURPRISED`, contador disminuye a 19000 | `STATE_CONFIG` | ✅ |
 | 🌼  | `STATE_CONFIG`, contador = 10000 | presionar **B** | dibujito `CONFUSED`, mensaje “min reached” | `STATE_CONFIG` | ✅ |
 | 🌻  | `STATE_CONFIG` | Agitar (shake), contador entre 10000 y 60000 | dibujito `ANGRY`, beep grave, mensaje “BOMB ARMED” | `STATE_ARMED` | ✅ |
-| 🍃  | `STATE_ARMED`, tiempo restante > 7s | tiempo_restante >= 7 | display muestra segundos, beep medio (400 Hz) cada ciclo | `STATE_ARMED` | ✅ |
-| 🍂  | `STATE_ARMED`, tiempo restante ≤ 7s | tiempo_restante < 7 | display muestra segundos, beep agudo (880 Hz) cada ciclo | `STATE_ARMED` | ✅ |
-| 🍁  | `STATE_ARMED`, tiempo restante = 0s | tiempo restante = 0 | suena marcha fúnebre, dibujito `SKULL`, mensajito “PRESS A TO RESTART” | `STATE_EXPLODE` | ✅ |
+| 🍃  | `STATE_ARMED`, tiempo restante = 20000 | tiempo_restante >= 7000 | display muestra segundos, beep medio (400 Hz) cada ciclo | `STATE_ARMED` | ✅ |
+| 🍂  | `STATE_ARMED`, tiempo restante = 8000 | tiempo_restante < 7000 | display muestra segundos, beep agudo (880 Hz) cada ciclo | `STATE_ARMED` | ✅ |
+| 🍁  | `STATE_ARMED`, tiempo restante = 1s | tiempo restante = 0 | suena marcha fúnebre, dibujito `SKULL`, mensajito “PRESS A TO RESTART” | `STATE_EXPLODE` | ✅ |
 | 🌱  | `STATE_EXPLODE` | presionar **A** | contador reiniciado a 20000, vuelve a configuración y el display muestra el tiempo | `STATE_CONFIG` | ✅ |
+
 
