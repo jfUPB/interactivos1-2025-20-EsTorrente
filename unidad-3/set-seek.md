@@ -66,3 +66,125 @@ while True:
 
 ```
 
+```program.py
+from microbit import *
+import utime
+import music
+
+STATE_INIT = 0
+STATE_CONFIG = 1
+STATE_ARMED = 2
+STATE_EXPLODE = 3
+
+class Bomba:
+    def __init__(self):
+
+        self.PASSWORD = ['A','B','A']
+        self.key = ['']*len(self.PASSWORD)
+        self.keyindex = 0
+
+        self.counter = 20000 #el rango de tiempo que la persona settea antes de que explote 
+        self.start_time = 0 #el momento en el que se arma la bomba
+        self.time_left = 0 #lo que queda antes de que explote
+
+        self.current_state = STATE_INIT
+
+    def update(self):
+        if self.current_state == STATE_INIT:
+            display.show(Image.SMILE)
+            sleep(400)
+            self.current_state = STATE_CONFIG
+
+            if self.current_state == STATE_CONFIG:
+                display.scroll(int(self.counter/1000), delay=100)
+                display.scroll('s')
+
+            #sumarle al counter
+            if button_a.was_pressed():
+                if self.counter < 60000:
+                    music.pitch(400, 100)
+                    display.show(Image.MEH)
+                    sleep(400)
+                    self.counter+=1000
+                else:
+                    display.show(Image.CONFUSED)
+                    sleep(400)
+                    display.scroll('max reached', delay=100)
+
+            #restarle al counter    
+            elif button_b.was_pressed():
+                if self.counter > 10000:
+                    music.pitch(200, 100)
+                    display.show(Image.SURPRISED)
+                    sleep(400)
+                    self.counter-=1000
+                else:
+                    display.show(Image.CONFUSED)
+                    sleep(400)
+                    display.scroll('min reached', delay=100)
+
+            #armar la bomba
+            elif accelerometer.was_gesture('shake'):
+                display.show(Image.ANGRY)
+                music.pitch(200, 200)
+                display.scroll('BOMB ARMED', delay=70)
+                self.start_time = utime.ticks_ms()
+                self.current_state = STATE_ARMED
+
+    # BOMBA ARMADA
+        if self.current_state == STATE_ARMED:
+            time_left = utime.ticks_diff(self.counter,utime.ticks_diff(utime.ticks_ms(), self.start_time))
+            display.scroll(int(time_left/1000), delay=60)
+
+            if self.time_left < 7000:
+                music.pitch(880, 50)
+            else:
+                music.pitch(400, 50)
+
+            #contraseña
+            if button_a.was_pressed():
+                self.key[self.keyindex] = 'A'
+                self.keyindex = self.keyindex + 1
+
+            if button_b.was_pressed():
+                self.key[self.keyindex] = 'B'
+                self.keyindex = self.keyindex + 1
+
+            if self.keyindex == len(self.key):
+
+                passIsOK = True
+                for i in range(len(self.key)):
+                    if self.key[i] != self.PASSWORD[i]:
+                        passIsOK = False
+                        break;
+                if passIsOK == True:
+                    self.count = 20
+                    display.show(self.count,wait=False)
+                    self.keyindex = 0
+                    self.state = 'CONFIG'
+                else:
+                    self.keyindex = 0
+
+            #check explotar
+            if utime.ticks_diff(utime.ticks_ms(), self.start_time) > self.counter:
+                display.show(Image.SKULL)
+                music.play(music.FUNERAL)
+                sleep(1500)
+                self.current_state = STATE_EXPLODE
+
+        # BOMBA EXPLOTA
+        if self.current_state == STATE_EXPLODE:
+            display.scroll('PRESS A TO RESTART', delay=100)
+
+            if button_a.was_pressed():
+                display.show(Image.HAPPY)
+                sleep(1500)
+                self.counter = 20000
+                self.current_state = STATE_CONFIG
+        
+bomba = Bomba()
+
+while True:
+    bomba.update()
+
+ ```
