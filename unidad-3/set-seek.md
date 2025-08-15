@@ -65,6 +65,8 @@ while True:
     Semaforo3.update()
 
 ```
+___
+### 📝 ACTIVIDAD 02
 
 ```program.py
 from microbit import *
@@ -188,4 +190,5 @@ while True:
     bomba.update()
 
  ```
+
 
