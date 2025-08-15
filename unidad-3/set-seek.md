@@ -191,4 +191,123 @@ while True:
 
  ```
 
+___  
+BONUS RETO  
+```program.py
+# Imports go at the top
+from microbit import *
+import utime
+import radio
+
+display.clear()
+
+class Event:
+    def __init__(self):
+        self.value = 0
+
+    def set(self,_val):
+        self.value = _val
+
+    def clear(self):
+        self.value = 0
+
+    def read(self):
+        return self.value
+
+
+class RadioTask:
+    def __init__(self):
+        radio.config(group=123)
+        radio.on()
+        pass
+
+    def update(self):
+        if button_a.was_pressed():
+            radio.send('A')
+        elif button_b.was_pressed():
+            radio.send('B')
+        elif accelerometer.was_gesture('shake'):
+            radio.send('S')
+        elif pin_logo.is_touched():
+            radio.send('T')
+
+class BombTask:
+    def __init__(self):
+        self.PASSWORD = ['A','B','A']
+        self.key = ['']*len(self.PASSWORD)
+        self.keyindex = 0
+        self.count = 20
+        self.startTime = utime.ticks_ms()
+        self.state = 'CONFIG'
+        display.clear()
+        display.show(self.count,wait=False)
+
+    def update(self):
+        if self.state == 'CONFIG':
+            if event.read() == 'A':
+                event.clear()
+                self.count = min(self.count+1,60)
+                display.show(self.count,wait=False)
+
+            if event.read() == 'B':
+                event.clear()
+                self.count = max(10,self.count-1)
+                display.show(self.count, wait=False)
+
+            if event.read() == 'S':
+                event.clear()
+                self.startTime = utime.ticks_ms()
+                self.state = 'ARMED'
+
+        elif self.state == 'ARMED':
+            if utime.ticks_diff(utime.ticks_ms(),self.startTime) > 1000:
+                self.startTime = utime.ticks_ms()
+                self.count = self.count - 1
+                display.show(self.count,wait=False)
+                if self.count == 0:
+                    display.show(Image.SKULL)
+                    self.state = 'EXPLODED'
+
+            if event.read() == 'A':
+                event.clear()
+                self.key[self.keyindex] = 'A'
+                self.keyindex = self.keyindex + 1
+
+            if event.read() == 'B':
+                event.clear()
+                self.key[self.keyindex] = 'B'
+                self.keyindex = self.keyindex + 1
+
+            if self.keyindex == len(self.key):
+
+                passIsOK = True
+                for i in range(len(self.key)):
+                    if self.key[i] != self.PASSWORD[i]:
+                        passIsOK = False
+                        break;
+                if passIsOK == True:
+                    self.count = 20
+                    display.show(self.count,wait=False)
+                    self.keyindex = 0
+                    self.state = 'CONFIG'
+                else:
+                    self.keyindex = 0
+
+        elif self.state == 'EXPLODED':
+            if event.read() == 'T':
+                event.clear()
+                self.count = 20
+                display.show(self.count,wait=False)
+                self.startTime = utime.ticks_ms()
+                self.state = 'CONFIG'
+
+bombTask = BombTask()
+buttonTask = RadioTask()
+event = Event()
+radio.on()
+
+while True:
+    buttonTask.update()
+    bombTask.update()
+```
 
