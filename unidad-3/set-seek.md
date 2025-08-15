@@ -95,9 +95,9 @@ class Bomba:
             sleep(400)
             self.current_state = STATE_CONFIG
 
-            if self.current_state == STATE_CONFIG:
-                display.scroll(int(self.counter/1000), delay=100)
-                display.scroll('s')
+        if self.current_state == STATE_CONFIG:
+            display.scroll(int(self.counter/1000), delay=100)
+            display.scroll('s')
 
             #sumarle al counter
             if button_a.was_pressed():
@@ -131,17 +131,24 @@ class Bomba:
                 self.start_time = utime.ticks_ms()
                 self.current_state = STATE_ARMED
 
-    # BOMBA ARMADA
+        # BOMBA ARMADA
         if self.current_state == STATE_ARMED:
             time_left = utime.ticks_diff(self.counter,utime.ticks_diff(utime.ticks_ms(), self.start_time))
             display.scroll(int(time_left/1000), delay=60)
 
-            if self.time_left < 7000:
+            if time_left < 7000:
                 music.pitch(880, 50)
             else:
                 music.pitch(400, 50)
 
-            #contraseña
+            #check explotar
+            if utime.ticks_diff(utime.ticks_ms(), self.start_time) > self.counter:
+                display.show(Image.SKULL)
+                music.play(music.FUNERAL)
+                sleep(1500)
+                self.current_state = STATE_EXPLODE
+
+            #check contraseña
             if button_a.was_pressed():
                 self.key[self.keyindex] = 'A'
                 self.keyindex = self.keyindex + 1
@@ -158,19 +165,12 @@ class Bomba:
                         passIsOK = False
                         break;
                 if passIsOK == True:
-                    self.count = 20
-                    display.show(self.count,wait=False)
+                    self.counter = 20000
+                    display.show(self.counter,wait=False)
                     self.keyindex = 0
-                    self.state = 'CONFIG'
+                    self.current_state = STATE_CONFIG
                 else:
                     self.keyindex = 0
-
-            #check explotar
-            if utime.ticks_diff(utime.ticks_ms(), self.start_time) > self.counter:
-                display.show(Image.SKULL)
-                music.play(music.FUNERAL)
-                sleep(1500)
-                self.current_state = STATE_EXPLODE
 
         # BOMBA EXPLOTA
         if self.current_state == STATE_EXPLODE:
@@ -188,3 +188,4 @@ while True:
     bomba.update()
 
  ```
+
