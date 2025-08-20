@@ -192,7 +192,7 @@ while True:
  ```
 
 ___  
-BONUS RETO  
+### 📝 BONUS RETO  
 ```program.py
 # Imports go at the top
 from microbit import *
@@ -310,4 +310,23 @@ while True:
     buttonTask.update()
     bombTask.update()
 ```
+___
+### 📝Actividad 05
+<img width="1190" height="824" alt="image" src="https://github.com/user-attachments/assets/058c7e20-d83d-4953-954f-587d7759c5c8" />
+
+
+|  | Estado actual | Evento detectado | Qué sucede (acciones) | Nuevo estado |
+|--|---------------|------------------|------------------------|--------------|
+|🌱| CONFIG | event.read() == 'A' (se presiona **A** o llega `'A'` por serial) | se borra el evento, el contador aumenta en +1 y se actualiza la pantalla con el valor | CONFIG |
+|🌿| CONFIG | event.read() == 'B' (se pulsa **B** o llega `'B'` por serial) | se borra el evento, el contador disminuye en -1 y se actualiza la pantalla con el valor | CONFIG |
+|🌼| CONFIG | event.read() == 'S' (se detecta un **shake** o llega `'S'`) | se borra el evento, se guarda el momento actual en `startTime` y la bomba pasa a ARMED | ARMED |
+|🌻| ARMED | utime.ticks_diff(utime.ticks_ms(), self.startTime) > 1000 (ha pasado 1 segundo desde el último tick) | se resta 1 al contador, se vuelve a mostrar en la pantallita y se actualiza el `startTime` | ARMED |
+|🍃| ARMED | event.read() == 'A' (se presiona **A** o llega `'A'` por serial) | se borra el evento, se agrega `'A'` al array de la contraseña y se incrementa el índice | ARMED |
+|🍂| ARMED | event.read() == 'B' (se pulsa **B** o llega `'B'` por serial) | se borra el evento, se agrega `'B'` al array de la contraseña y se incrementa el índice | ARMED |
+|🍁| ARMED | self.keyindex == len(self.key) (se llega al lenght del key) | se compara casilla por casilla la contraseña ingresada con la contraseña definidida (`PASSWORD`) | ARMED |
+|🌱| ARMED | passIsOK == True (la contraseña coincide con `PASSWORD`) | se reinicia el contador a 20, se muestra en la pantalla, se reinicia el índice y vuelve a CONFIG | CONFIG |
+|🌿| ARMED | self.count == 0 (contador en 0) | se muestra la calavera y la bomba pasa automáticamente a EXPLODED | EXPLODED |
+|🌼| EXPLODED | event.read() == 'T' (se toca el logo o llega `'T'`) | se borra el evento, el contador se reinicia a 20, se actualiza la pantalla y se regresa a CONFIG | CONFIG |
+
+
 
