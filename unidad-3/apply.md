@@ -34,6 +34,7 @@ function draw() {
   //================ config ===============
   if (state === 'CONFIG') 
   {
+    fill('black');
     background(200);
     
     textSize(30);
@@ -184,6 +185,7 @@ ___
 
 ### 📝 Actividad 07
 
+[Link](https://editor.p5js.org/EsTorrente/sketches/TYiutwYir)  
 No alcancé a hacerlo en la clase y en la casa no hay micro:bit, entonces está hecho a ciegas y en base a los anteriores programas que ya habíamos diseñado para conectarse entre los dos. No sé si funciona. :c  
 
 🌱 **Código del micro:bit**  
@@ -272,6 +274,7 @@ function draw() {
   
   //================ config ===============
   if (state === 'CONFIG') {
+    fill('black');
     background(200);
     
     textSize(30);
