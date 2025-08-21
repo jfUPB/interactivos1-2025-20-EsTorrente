@@ -219,7 +219,7 @@ while True:
 ```
 
 🌿 **Código del p5.js**  
-En el index: `script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script>`    
+En el index: `<script src="https://unpkg.com/@gohai/p5.webserial@^1/libraries/p5.webserial.js"></script>`    
 ```
 let state;
 let counter;
@@ -415,3 +415,4 @@ function connectBtnClick() {
   }
 }
 ```
+
