@@ -402,8 +402,8 @@ function draw() {
   rotateZ(-rotationZ);
 
   // ------ mesh noise ------
-    noiseXRange = microBitX / 220;
-    noiseYRange = microBitY / 220;
+    noiseXRange = microBitX / 220; // MODIFICADO CON MICROBIT
+    noiseYRange = microBitY / 220; // MODIFICADO CON MICROBIT
 
   noiseDetail(octaves, falloff);
   var noiseYMax = 0;
@@ -482,7 +482,8 @@ function connectBtnClick() {
 
 ## Video
 
-[Video demostratativo](URL)
+[Video demostratativo](https://youtu.be/K70mLIiHOKU)
+
 
 
 
