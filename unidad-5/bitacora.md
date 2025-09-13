@@ -71,6 +71,7 @@ ___
 > Se están enviando 2 bytes del xValue, 2 bytes del yValue, 1 byte del aState y 1 byte del bState. En total, cada vez que el micro:bit envía el dato, son 6 bytes. Como en el formato se usa el símbolo >, eso significa que los bytes “más grandes” (el byte alto de los enteros) se mandan primero.  
 > - `2h`: son dos enteros cortos con signo (cada uno ocupa 2 bytes). Ahí van el xValue y el yValue.  
 > - `2B`: son dos enteros sin signo de 1 byte cada uno. Ahí van los estados de los botones A y B, representados con 0 o 1 (creo, porque así es el true/false).  
+> `PD: Creo que la trampita que habías mencionado es que le agregaste el check del gesto shake. Al principio sí me comí la trampa y no entendía por qué no llegaba ningún dato, pero no fue sino detenerme un segundo a mirar bien el código para notarlo.`  
 
 🌱 **Recuerda de la unidad anterior que es posible enviar números positivos y negativos para los valores de xValue y yValue. ¿Cómo se verían esos números en el formato '>2h2B'?**  
 > No estoy 100% segura de todos los detalles, pero sí sé que como esos valores pueden ser negativos, entonces se guardan usando el formato de 2 bytes con signo (int16). Tuve que buscar el dato porque no sabía... y dice que en hexadecimal, los negativos se representan con algo que se llama complemento a dos, y por eso es que a veces aparecen un montón de F al inicio de los bytes cuando el número es negativo. Por ejemplo, un -1 no se guarda como 0x-1, sino como 0xFF 0xFF. En cambio, si el número es positivo, los bytes se ven sin esas F de relleno.  
@@ -112,6 +113,7 @@ ___
 | qué es el DataView? por qué se usa para extraer los datos en view.getInt16(0)? | DataView es una clase de JavaScript que permite leer y escribir datos binarios dentro de un ArrayBuffer. Es necesario porque los bytes que llegan son “planos”, se desea interpretarlos como enteros de 16 bits o enteros de 8 bits. | coge los numeritos separados de los bytes y los convierte a los números que les corresponden. |
 
 Literalmente después de responder todas estas preguntas y seguir leyendo las actividades, me di cuenta de que la mayoría de cosas que investigué eran preguntas que tú nos planteaste también en el reflect. Flop. Pero supongo que eso significa que mi proceso de pensamiento e investigación es adecuado, y es muestra de que las preguntas que planteé sí ayudan a mi aprendizaje. 
+
 
 
 
