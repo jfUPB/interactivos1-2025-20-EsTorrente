@@ -62,40 +62,42 @@ ___
 > No entiendo mucho lo que estoy viendo, dónde empieza y dónde termina el dato que se envía cada frame... pero lo que sí entiendo es que los caracteres junticos que observo son cada uno un byte.  
 
 🌼 **¿Qué ventajas y desventajas ves en usar un formato binario en lugar de texto en ASCII?**  
-> Creo que la mayor diferencia es que el binario parece mucho más eficaz a la hora de mandar los datos, pero es que no puedo leer nada de lo que dice D:  
-> Además, creo que hay que ser cuidadoso a la hora de definir el formato para el binario, porque hay que tener muy en cuenta cuántos datos se envían y de qué tipo.  
+> Creo que la mayor diferencia es que el binario parece mucho más eficaz a la hora de mandar los datos, porque ocupa menos espacio y se envía más rápido. Cada dato se manda ya en “su forma más cruda”, sin necesidad de convertirlo a caracteres de texto.  
+> La parte negativa es que yo no puedo leer nada de lo que dice a simple vista D:  
+> Además, hay que ser súper cuidadoso a la hora de definir el formato, porque si me equivoco en cuántos bytes corresponde a cada dato, los números se empiezan a leer mal. En ASCII, en cambio, basta con separar por comas y ya sé dónde empieza y dónde termina cada valor.  
 
 🌻 **Captura el resultado del experimento. ¿Cuántos bytes se están enviando por mensaje? ¿Cómo se relaciona esto con el formato '>2h2B'? ¿Qué significa cada uno de los bytes que se envían?**  
 <img width="989" height="448" alt="image" src="https://github.com/user-attachments/assets/5b957bd2-7382-4496-a4c3-574f20a222bb" />  
-> Se están enviando 2 bytes del xValue, 2 bytes del yValue, 1 byte de aState y 1 byte de bState. En total, cada vez que el micro:bit envía el dato, se están enviando 6 bytes. Como los bytes más grandes se envían primero, entonces aparecen al inicio los de 2.  
-> - `2h`: 2 enteros cortos  
-> - `2B`: 2 enteros sin signo  
+> Se están enviando 2 bytes del xValue, 2 bytes del yValue, 1 byte del aState y 1 byte del bState. En total, cada vez que el micro:bit envía el dato, son 6 bytes. Como en el formato se usa el símbolo >, eso significa que los bytes “más grandes” (el byte alto de los enteros) se mandan primero.  
+> - `2h`: son dos enteros cortos con signo (cada uno ocupa 2 bytes). Ahí van el xValue y el yValue.  
+> - `2B`: son dos enteros sin signo de 1 byte cada uno. Ahí van los estados de los botones A y B, representados con 0 o 1 (creo, porque así es el true/false).  
 
 🌱 **Recuerda de la unidad anterior que es posible enviar números positivos y negativos para los valores de xValue y yValue. ¿Cómo se verían esos números en el formato '>2h2B'?**  
-> No estoy 100% segura, pero creo que tiene que ver algo con las F que aparecen entre bytes. Lo que sí sé es que como tienen signo, entonces deberían estarse enviando como un grupo de 2 bytes por dato.  
+> No estoy 100% segura de todos los detalles, pero sí sé que como esos valores pueden ser negativos, entonces se guardan usando el formato de 2 bytes con signo (int16). Tuve que buscar el dato porque no sabía... y dice que en hexadecimal, los negativos se representan con algo que se llama complemento a dos, y por eso es que a veces aparecen un montón de F al inicio de los bytes cuando el número es negativo. Por ejemplo, un -1 no se guarda como 0x-1, sino como 0xFF 0xFF. En cambio, si el número es positivo, los bytes se ven sin esas F de relleno.  
 
 🌿 **Captura el resultado del experimento. ¿Qué diferencias ves entre los datos en ASCII y en binario? ¿Qué ventajas y desventajas ves en usar un formato binario en lugar de texto en ASCII? ¿Qué ventajas y desventajas ves en usar un formato ASCII en lugar de binario?**  
 <img width="960" height="297" alt="image" src="https://github.com/user-attachments/assets/58bb3b30-ee69-469d-b5d1-612f519e463a" />  
-> En binario se separan por espacios (en la versión donde vemos el HEX solo), y el ASCII se separa por comas. El ASCII es muy fácil de leer e interpretar a simple vista, pero creo que es un poquito más pesado para el pc interpretar los datos en ese lenguaje que en binario...  
+> En binario, cuando los miro en la cosita web en formato HEX, se ven separados por espacios... y en ASCII los valores aparecen separados por comas y con números normales que yo puedo leer. Aunque ahí en esa versión combinada donde lo puse, se separan con brackets por algún motivo? y el \n se ve como [0a], además de que aparece al inicio y al fin del dato con ASCII. La ventaja del ASCII es que es súper fácil de leer e interpretar a simple vista. El problema es que ocupa mucho más espacio porque cada número se convierte en texto, y además el computador tiene que convertirlos otra vez a números para poder usarlos. El binario, en cambio, ocupa mucho menos espacio y llega más directo al computador, porque no le toca hacer tanta conversión. Pero es mucho más difícil de interpretar para mí.
 
 ### 📋 Actividad 03
 
 🌼 **Explica por qué en la unidad anterior teníamos que enviar la información delimitada y además marcada con un salto de línea y ahora no es necesario.**  
-> Creo que es porque este formato indica directamente en el código cuántos datos de cuántos bytes se van a enviar. En el anterior, necesitábamos definir manualmente un punto de corte. Aquí se sabe directamente cuál será el largo del dato enviado.  
+> Creo que es porque en el formato binario ya se indica directamente en el código cuántos datos y de cuántos bytes se van a enviar. Entonces el receptor sabe exactamente dónde cortar. En cambio, en ASCII cada número puede tener distinta cantidad de dígitos, así que tocaba poner separadores como la coma y el salto de línea para que el programa supiera dónde terminaba un número y dónde empezaba el siguiente.  
 
 🌻 **Compara el código de la unidad anterior relacionado con la recepción de los datos seriales que ves ahora. ¿Qué cambios observas? ¿Qué ves en la consola? ¿Por qué crees que se produce este error?**  
 <img width="939" height="301" alt="image" src="https://github.com/user-attachments/assets/79706bee-efb5-4944-a1d4-2b19900fef64" />  
-> 1. Ya no se usa la línea de `readUntil` ni el `\n` porque sabemos directamente que se van a mandar 6 bytes fijos.  
-> 2. Utiliza `getInt16(0)` para agarrar el primer dato, `getInt16(2)` para el segundo (porque el primero ocupaba el byte 0 y el byte 1), `getUint8(4)` para el tercero (porque los uints no tienen signo, siempre se toman positivos), y `getUint8(5)` para el último porque el anterior se componía de un solo byte.  
-> 3. Ya no se están seteando los estados de los botones con `=== "true"` sino con `=== 1`  
-> 4. No estoy muy segura de qué es el dataView ni el .view...  
+> 1. Ya no se usa la línea de `readUntil` ni el `\n` porque sabemos directamente que se van a mandar 6 bytes fijos.
+> 2. En vez de checkear si hay más de 0 datos, checkea que hayan 6 o más. 
+> 3. Utiliza `getInt16(0)` para agarrar el primer dato, `getInt16(2)` para el segundo (porque el primero ocupaba el byte 0 y el byte 1), `getUint8(4)` para el tercero (porque los uints no tienen signo, siempre se toman positivos), y `getUint8(5)` para el último porque el anterior se componía de un solo byte.  
+> 4. Ya no se están seteando los estados de los botones con `=== "true"` sino con `=== 1`  
+> 5. No estoy del todo segura de cómo funciona el DataView, pero estoy viendo que es necesario para interpretar los datos. Eso no era necesario con ASCII. Me imagino que es como un cast?  
   
-> No estoy muy segura de por qué se da el error, pero creería que está cortando mal los bytes que recibe y mezclándolos como no es. Hace combinaciones incorrectas de los datos, y eso arroja cifras que no corresponden a lo que enviamos. 
+> El error que mencionas creo que pasa porque los 6 bytes no siempre llegan justos, sino que se mezclan con otros bytes del siguiente paquete. Entonces el programa los corta mal, junta pedacitos de mensajes distintos, y termina interpretando números que no corresponden a lo que realmente enviamos.  
 
 🌱 **Analiza el código, observa los cambios. Ejecuta y luego observa la consola. ¿Qué ves? ¿Qué cambios tienen los programas y ¿Qué puedes observar en la consola del editor de p5.js?**   
 <img width="959" height="402" alt="image" src="https://github.com/user-attachments/assets/e24c9ff0-0d24-42a2-a088-75003f891bb3" />  
 > Ahora sí funciona :D  
-> Los datos se cortan correctamente, no hay bytes solitos al inicio, todo sirve. Siento que el procedimiento es muchísimo más largo y complejo que hacerlo con ASCII, por más eficaz que sea a la hora de enviar los datos. Quizás es porque no estoy para nada familiarizada con muchas de las líneas de código que se están utilizando...  
+> Los datos se cortan de manera correcta, no hay bytes sueltos ni números que nada qué ver. Todo llega bien alineado. Igual siento que el procedimiento se volvió muchísimo más largo y complejo que con ASCII. Con ASCII bastaba con un split(",") y listo, y acá hay que estar pendiente de los bytes, los offsets y el DataView. Quizás es porque no estoy familiarizada con muchas de las líneas de código que se usaron, pero por ahora siento que el ASCII es más amigable aunque el binario sea más rápido y eficiente.  
 
 ___
 
@@ -110,6 +112,7 @@ ___
 | qué es el DataView? por qué se usa para extraer los datos en view.getInt16(0)? | DataView es una clase de JavaScript que permite leer y escribir datos binarios dentro de un ArrayBuffer. Es necesario porque los bytes que llegan son “planos”, se desea interpretarlos como enteros de 16 bits o enteros de 8 bits. | coge los numeritos separados de los bytes y los convierte a los números que les corresponden. |
 
 Literalmente después de responder todas estas preguntas y seguir leyendo las actividades, me di cuenta de que la mayoría de cosas que investigué eran preguntas que tú nos planteaste también en el reflect. Flop. Pero supongo que eso significa que mi proceso de pensamiento e investigación es adecuado, y es muestra de que las preguntas que planteé sí ayudan a mi aprendizaje. 
+
 
 
 
