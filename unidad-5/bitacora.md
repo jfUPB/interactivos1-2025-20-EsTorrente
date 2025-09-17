@@ -114,10 +114,338 @@ ___
 
 Literalmente después de responder todas estas preguntas y seguir leyendo las actividades, me di cuenta de que la mayoría de cosas que investigué eran preguntas que tú nos planteaste también en el reflect. Flop. Pero supongo que eso significa que mi proceso de pensamiento e investigación es adecuado, y es muestra de que las preguntas que planteé sí ayudan a mi aprendizaje. 
 
+___
+
+### 📋 Actividad 04
+
+🌱 **Código modificado para recibir datos de nueva forma:**
+
+```program.py
+// M_1_4_01
+//
+// Generative Gestaltung – Creative Coding im Web
+// ISBN: 978-3-87439-902-9, First Edition, Hermann Schmidt, Mainz, 2018
+// Benedikt Groß, Hartmut Bohnacker, Julia Laub, Claudius Lazzeroni
+// with contributions by Joey Lee and Niels Poldervaart
+// Copyright 2018
+//
+// http://www.generative-gestaltung.de
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * creates a terrain like mesh based on noise values.
+ *
+ * MOUSE
+ * position x/y + left drag   : specify noise input range
+ * position x/y + right drag  : camera controls
+ *
+ * KEYS
+ * arrow up                   : noise falloff +
+ * arrow down                 : noise falloff -
+ * arrow left                 : noise octaves -
+ * arrow right                : noise octaves +
+ * space                      : new noise seed
+ * +                          : zoom in
+ * -                          : zoom out
+ * s                          : save png
+ */
+
+//MICRO:BIT
+let port;
+let connectBtn;
+let connectionInitialized = false;
+let microBitConnected = false;
+let serialBuffer = [];
+
+// ------ mesh ------
+var tileCount;
+var zScale;
+
+// ------ noise ------
+var noiseXRange;
+var noiseYRange;
+var octaves;
+var falloff;
+
+// ------ mesh coloring ------
+var midColor;
+var topColor;
+var bottomColor;
+var strokeColor;
+var threshold;
+
+// ------ mouse interaction ------
+var offsetX;
+var offsetY;
+var clickX;
+var clickY;
+var zoom;
+var rotationX;
+var rotationZ;
+var targetRotationX;
+var targetRotationZ;
+var clickRotationX;
+var clickRotationZ;
+
+const STATES = {
+  WAIT_MICROBIT_CONNECTION: "WAITMICROBIT_CONNECTION",
+  RUNNING: "RUNNING",
+};
+let appState = STATES.WAIT_MICROBIT_CONNECTION;
+let microBitX = 0;
+let microBitY = 0;
+let microBitAState = false;
+let microBitBState = false;
+
+function setup() {
+  createCanvas(600, 600, WEBGL);
+  colorMode(HSB, 360, 100, 100);
+  cursor(CROSS);
+  
+  // MICRO BIT ===========================================
+  port = createSerial();
+  connectBtn = createButton('Conectar al micro:bit');
+  connectBtn.position(20, 20);
+  connectBtn.mousePressed(connectBtnClick);
+
+  // ------ mesh ------
+  tileCount = 50;
+  zScale = 150;
+
+  // ------ noise ------
+  noiseXRange = 10;
+  noiseYRange = 10;
+  octaves = 4;
+  falloff = 0.5;
+
+  // ------ mesh coloring ------
+  topColor = color(0, 0, 100);
+  midColor = color(30, 99, 63);
+  bottomColor = color(0, 0, 0);
+  strokeColor = color(60, 100, 100);
+  threshold = 0.30;
+
+  // ------ mouse interaction ------
+  offsetX = 0;
+  offsetY = 0;
+  clickX = 0;
+  clickY = 0;
+  zoom = -300;
+  rotationX = 0;
+  rotationZ = 0;
+  targetRotationX = PI / 3;
+  targetRotationZ = 0;
+}
+
+function updateButtonStates(newAState, newBState) {
+  
+  if (newAState) {
+    targetRotationX += 0.4;
+    falloff -= 0.5;
+      print("A pressed");
+  }
+  if (newBState) {
+    targetRotationZ += 0.4;
+    octaves++;
+      print("B pressed");
+  }
+  
+}
+
+function connectBtnClick() {
+  if (!port.opened()) {
+    port.open("MicroPython", 115200);
+    connectionInitialized = false;
+  } else {
+    port.close();
+  }
+}
+
+function readSerialData() {
+
+  let available = port.availableBytes();
+  if (available > 0) {
+    let newData = port.readBytes(available);
+    serialBuffer = serialBuffer.concat(newData);
+  }
 
 
+  while (serialBuffer.length >= 8) {
+    if (serialBuffer[0] !== 0xaa) {
+      serialBuffer.shift(); 
+      continue;
+    }
+
+    if (serialBuffer.length < 8) break;
 
 
+    let packet = serialBuffer.slice(0, 8);
+    serialBuffer.splice(0, 8); 
 
 
+    let dataBytes = packet.slice(1, 7);
+    let receivedChecksum = packet[7];
 
+    let computedChecksum = dataBytes.reduce((acc, val) => acc + val, 0) % 256;
+
+    if (computedChecksum !== receivedChecksum) {
+      console.log("Checksum error in packet");
+      continue; 
+    }
+    
+    let buffer = new Uint8Array(dataBytes).buffer;
+    let view = new DataView(buffer);
+    microBitX = view.getInt16(0);
+    microBitY = view.getInt16(2);
+    microBitAState = view.getUint8(4) === 1;
+    microBitBState = view.getUint8(5) === 1;
+    updateButtonStates(microBitAState, microBitBState);
+
+    console.log(
+      `microBitX: ${microBitX} microBitY: ${microBitY} microBitAState: ${microBitAState} microBitBState: ${microBitBState}`
+    );
+  }
+}
+
+function draw() {
+  background(0, 0, 100);
+  ambientLight(150);
+  
+  //******************************************
+  if (!port.opened()) {
+    connectBtn.html("Connect to micro:bit");
+    microBitConnected = false;
+  } else {
+    microBitConnected = true;
+    connectBtn.html("Disconnect");
+
+  readSerialData();
+
+  // ------ set view ------
+  push();
+  translate(width * 0.05, height * 0.05, zoom);
+
+  if (mouseIsPressed && mouseButton == RIGHT) {
+    offsetX = mouseX - clickX;
+    offsetY = mouseY - clickY;
+    targetRotationX = min(max(clickRotationX + offsetY / float(width) * TWO_PI, -HALF_PI), HALF_PI);
+    targetRotationZ = clickRotationZ + offsetX / float(height) * TWO_PI;
+  }
+  rotationX += (targetRotationX - rotationX) * 0.25;
+  rotationZ += (targetRotationZ - rotationZ) * 0.25;
+  rotateX(-rotationX);
+  rotateZ(-rotationZ);
+
+  // ------ mesh noise ------
+    noiseXRange = microBitX / 220; // MODIFICADO CON MICROBIT
+    noiseYRange = microBitY / 220; // MODIFICADO CON MICROBIT
+
+  noiseDetail(octaves, falloff);
+  var noiseYMax = 0;
+
+  var tileSizeY = height / tileCount;
+  var noiseStepY = noiseYRange / tileCount;
+
+  for (var meshY = 0; meshY <= tileCount; meshY++) {
+    beginShape(TRIANGLE_STRIP);
+    for (var meshX = 0; meshX <= tileCount; meshX++) {
+
+      var x = map(meshX, 0, tileCount, -width / 2, width / 2);
+      var y = map(meshY, 0, tileCount, -height / 2, height / 2);
+
+      var noiseX = map(meshX, 0, tileCount, 0, noiseXRange);
+      var noiseY = map(meshY, 0, tileCount, 0, noiseYRange);
+      var z1 = noise(noiseX, noiseY);
+      var z2 = noise(noiseX, noiseY + noiseStepY);
+
+      noiseYMax = max(noiseYMax, z1);
+      var interColor;
+      colorMode(RGB);
+      var amount;
+      if (z1 <= threshold) {
+        amount = map(z1, 0, threshold, 0.15, 1);
+        interColor = lerpColor(bottomColor, midColor, amount);
+      } else {
+        amount = map(z1, threshold, noiseYMax, 0, 1);
+        interColor = lerpColor(midColor, topColor, amount);
+      }
+      fill(interColor);
+      stroke(strokeColor);
+      strokeWeight(1);
+      vertex(x, y, z1 * zScale);
+      vertex(x, y + tileSizeY, z2 * zScale);
+    }
+    endShape();
+  }
+  pop();
+
+}
+}
+
+function mousePressed() {
+  clickX = mouseX;
+  clickY = mouseY;
+  clickRotationX = rotationX;
+  clickRotationZ = rotationZ;
+}
+
+function keyReleased() {
+  if (keyCode == UP_ARROW) falloff += 0.05;
+  if (keyCode == DOWN_ARROW) falloff -= 0.05;
+  if (falloff > 1.0) falloff = 1.0;
+  if (falloff < 0.0) falloff = 0.0;
+
+  if (keyCode == LEFT_ARROW) octaves--;
+  if (keyCode == RIGHT_ARROW) octaves++;
+  if (octaves < 0) octaves = 0;
+
+  if (keyCode == 187) zoom += 20; // '+'
+  if (keyCode == 189) zoom -= 20; // '-'
+
+  if (key == 's' || key == 'S') saveCanvas(gd.timestamp(), 'png');
+  if (key == ' ') noiseSeed(floor(random(100000)));
+}
+```
+  
+🌿 **Vas a documentar en tu bitácora todo el proceso de construcción de la aplicación, mostrando las pruebas intermedias que hiciste, los errores que encontraste y cómo los solucionaste.**
+> El proceso de construcción fue muy sencillo. Realmente había manejado bien la parte de la modificación del programa en la versión anterior, por lo que no tuve que realizar correciones al código base. Simplemente comparé el código del ejemplo del ejercicio #3 y fuí analizando los cambios entre ese y mi plantilla. Empecé por borrar lo que ya no necesitaba, que era la manera vieja de procesar los datos. Luego, creé la función que manejaba ese proceso de la nueva forma. Una vez montada la función, la llamé en el draw()... y finalmente, caí en cuenta de que había una variable extra que debía agregar al inicio.  
+> Cuando estaba contruyendo el proyecto, estaba DEMASIADO dormida. Cometí dos errores MUY bobos y MUY simples de solucionar. Uno de ellos, por ejemplo, fue haber agregado correctamente la función de leer datos, pero olvidarme de llamar `readSerialData()` en el draw (me quedé como 5 minutos procesando por qué no llegaban los datos). Otro error fue que, en medio de mi cansancio, se me olvidó declarar `let serialBuffer = [];`. Cuando fui a correr el programa, obviamente me lanzó error porque estaba intentando asignar un dato a una variable que no creé correctamente. Todo se arregló fácilmente con solo sentarme, leer detenidamente el código en lugar de copiar/pegar de manera confiada, y teniendo la ventaja de que comprendo realmente lo que estoy haciendo.  
+
+Muestra de cómo se veía sin el `readSerialData()`. No sale ningún error... pero yo sabía que en el código, en caso de correr correctamente, me debería estar tirando un mensaje en el log que me dijera que había un error en el checksum si había un problema, o me hiciera print de los valores que estaba recibiendo. Como simplemente no había nada en consola, fue fácil darme cuenta de que ni siquiera estaba llamando el método y arreglarlo.  
+<img width="1912" height="820" alt="image" src="https://github.com/user-attachments/assets/5ad43d9b-e4e9-4c43-aaa6-25f55f081118" />  
+  
+🌼 **Vas a realizar múltiples experimentos analizando el comportamiento de la aplicación que construiste. Reporta el proceso de experimentación en la bitácora. Con estas evidencias debes demostrar que has comprendido los conceptos y técnicas vistas en esta unidad.**  
+  
+**⭐ EXPERIMENTO 1 ⭐: modificar el código para quitar el checksum y ver cómo se daña la recepción de datos en mi programa.**
+> **Mi predicción:** los valores de X y Y que controlan los parámetros del ruido en el dibujo van a ser súper erráticos, porque los números no van a estar bien construidos y se van a convertir en valores arbitrarios. Además, los inputs van a mezclarse entre sí. Siento que la parte de la inclinación va a afectar el estado de los botones.
+
+> **Lo que pasó:** Efectivame, todo sucedió tal cuál. El dibujo se dibujó con un ruido súper caótico, inclinar el micro:bit a la izquierda lo detectaba como presionar el botón B, y presionar el botón B se detectaba como presionar A. Esto es porque, sin el uso del checksum (y el buffer que usa), el programa solamente agarra los datos que le llegan y forma grupitos de datos sin reglas.   
+  
+<img width="1742" height="859" alt="image" src="https://github.com/user-attachments/assets/a5429799-b8a5-4e17-8faa-51b2566623da" />  
+   
+**⭐ EXPERIMENTO 2 ⭐: qué pasa si disminuyo y aumento el sleep() en el programa del micro:bit?**  
+> **Mi predicción:** si aumento el sleep, va a pasar un rato en el que no está detectando ningún input. Eso afecta, por ejemplo, la funcionalidad de dejar presionado el botón B para rotar la figura. Si lo disminuyo, no sé si el PC soporte la velocidad de envío... en el PC de la sala de los viernes, se me crasheó Google cuando lo intenté D:  
+     
+> **Lo que pasó:** al quitar el sleep por completo, es como si el programa estuviera x2. Presionar B una sola vez hace que el dibujito gire UN MONTÓN, y cada mínima inclinación del micro:bit provocaba como un "jittering" en el ruido. Siento que es porque la misma línea de datos se logra mandar MUCHAS veces por frame, provocando que el input "se repita" y dé esa sensación de hypersensibilidad. Por otro lado, aumentar el sleep a 2000 hizo el efecto contrario. Hizo que se viera a 2 fps. Aunque el programa en p5.js sí estaba corriendo a un framerate normal, los datos se envían solamente cada 2.  
+  
+**⭐ EXPERIMENTO 3 ⭐: reemplazar `b'\xAA'` en el packet por algo común.**  
+> Lo que hice fue ir a la página de terminal que nos diste para ver los datos enviados por el micro:bit y elegir un dato random que vi que se repitiera. En este caso, tomé `f4`. Lo reemplacé en la línea `packet = b'\f4'`.
+  
+> **Mi predicción:** va a tirarme un error, porque al inicio del código tiene un check que dice: `(serialBuffer[0] !== 0xaa)`. Como checkea el primer dato y es distinto, entonces asumo que directamente me dirá que hay un problema con el paquete.
+  
+> **Lo que pasó:** exactamente eso :>  
+   
+<img width="1682" height="561" alt="image" src="https://github.com/user-attachments/assets/6df9101f-beca-45d4-ab76-7bf8a036d521" />
+
+**⭐ EXPERIMENTO 4 ⭐: qué pasa si quito `serialBuffer.splice(0, 8)`?**  
+
+> **Lo que pasó:** crasheó mi ventana D:
+> Es lo mismo que me había sucedido cuando intenté quitar el sleep en la sala de los viernes... ¿por qué pasó eso?  
