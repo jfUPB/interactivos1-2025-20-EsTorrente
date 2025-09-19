@@ -4,6 +4,7 @@
 
 [Enlace a la aplicación a modificar](https://editor.p5js.org/generative-design/sketches/M_1_4_01)
 
+
 Código a modificar:
 
 ``` js
@@ -201,10 +202,13 @@ function keyReleased() {
 ```
 
 [Enlace a la aplicación modificada](https://editor.p5js.org/EsTorrente/sketches/jpZB-GrRl)
+=======
+
 
 Código modificado:
 
 ``` js
+
 // M_1_4_01
 //
 // Generative Gestaltung – Creative Coding im Web
@@ -478,13 +482,10 @@ function connectBtnClick() {
     port.close();
   }
 }
-```
+
 
 ## Video
 
 [Video demostratativo](https://youtu.be/K70mLIiHOKU)
-
-
-
 
 
