@@ -486,3 +486,5 @@ ___
 | Autoevaluación | Justificación / Evidencias |
 |----------------|----------------------------|
 | Excelente | En la [Actividad 02](#02), expliqué con claridad la estructura de '>2h2B' y la representación de números negativos en complemento a dos. En mi [tabla de investigación](#tabla), articulé la diferencia entre slice y splice, y el rol del DataView, junto a muchas otras preguntas y respuestas sobre temas más complejos de lo enseñado. No me limité a copiar definiciones, sino que investigué, sinteticé y me apropié de conceptos complejos como CRC, control de flujo y protocolos de longitud variable, explicándolos en mis términos. |
+  
+🌱 **Mi nota propuesta:** 5 😼
