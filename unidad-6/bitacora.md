@@ -103,7 +103,13 @@ ___
 > Sí, ambos IDs coinciden.  
 
 🌼 **Inicia el servidor y abre page1 y page2. Mueve la ventana de page1. Observa la terminal del servidor. ¿Qué evento se registra (win1update o win2update)? ¿Qué datos (Data:) ves? Mueve la ventana de page2. Observa la terminal. ¿Qué evento se registra ahora? ¿Qué datos ves? Experimento clave: cambia socket.broadcast.emit(‘getdata’, page1); por socket.emit(‘getdata’, page1); (quitando broadcast). Reinicia el servidor, abre ambas páginas. Mueve page1. ¿Se actualiza la visualización en page2? ¿Por qué sí o por qué no? (Pista: ¿A quién le envía el mensaje socket.emit?). Restaura el código a broadcast.emit.**
->
+> `Mover Page1:` Received win1update from ID: KJOROJ-q_VhNf1DwAAAB Data: { x: -4, y: 109, width: 237, height: 968 }  
+> `Mover Page2:` Received win2update from ID: zHdk-5FsKF6bfvFnAAAF Data: { x: 937, y: 119, width: 159, height: 968 }  
+> Al cambiar la línea de código, deja de actualizarse page2. socket.emit se envía el dato a sí mismo, mientras que broadcast.emit se lo manda a todos los clientes menos al que lo envía.  
+
 
 🌻 **Detén el servidor. Cambia const port = 3000; a const port = 3001;. Inicia el servidor. ¿Qué mensaje ves en la consola? ¿En qué puerto dice que está escuchando? Intenta abrir http://localhost:3000/page1. ¿Funciona? Intenta abrir http://localhost:3001/page1. ¿Funciona? ¿Qué aprendiste sobre la variable port y la función listen? Restaura el puerto a 3000.**
->
+> `Server is listening on http://localhost:3001`  
+> http://localhost:3000/page1 ya no funciona. Me sale el mensaje de error `localhost refused to connect.`
+> http://localhost:3001/page1 sí funciona. Port define dónde escucha el servidor, y server.listen inicia el server en ese puerto en específico. Es como que nos cambien de salón para la clase. Si yo llevo al 314 un viernes, no voy a poder ver la clase de sistemas físicos interactivos.  
+
