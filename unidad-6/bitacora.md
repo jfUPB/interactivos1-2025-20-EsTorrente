@@ -87,4 +87,18 @@ ___
 > Para los desarrolladores puede ser util porque es complejo aprender a ser competente en múltiples lenguajes. Así se puede contratar un equipo que esté más especializado en javascript, y pueden trabajar tanto en el cliente como en el navegador sin problemas. Además, me imagino que facilita la parte de programación, porque las funciones funcionan igual en ambos lados. No hay que preocuparse por adaptar recepción de datos de un lugar a otro y esas cosas.  
 
 🌻 **Resume con tus propias palabras la diferencia fundamental entre una comunicación HTTP tradicional y una comunicación usando WebSockets/Socket.IO. ¿En qué tipo de aplicaciones has visto o podrías imaginar que se usa esta comunicación en tiempo real?**
-> Creo que en HTTP, la "conversación" entre cliente y servidor es mucho más extensa. Se deben pedir varios datos, explicar desde dónde se piden, especificar de qué tipo es cada archivo, etc en cada interacción. WebSockets se salta esa parte que toma tiempo y genera retraso, simplificándola para poder recibir y enviar datos de forma instantánea con una conexicón directa y una sola línea de código para recibir y enviar. Me imagino que se usaba en juegos como Club Penguin y todos los .io, en cosas como MySpace, Facebook, WhatsApp, google docs...  
+> Creo que en HTTP, la "conversación" entre cliente y servidor es mucho más extensa. Se deben pedir varios datos, explicar desde dónde se piden, especificar de qué tipo es cada archivo, etc en cada interacción. WebSockets se salta esa parte que toma tiempo y genera retraso, simplificándola para poder recibir y enviar datos de forma instantánea con una conexicón directa y una sola línea de código para recibir y enviar. Me imagino que se usaba en juegos como Club Penguin y todos los .io, en cosas como MySpace, Facebook, WhatsApp, google docs...
+
+> ___
+### 📝 Actividad 3
+
+**Detén el servidor si está corriendo. Cambia la primera ruta de /page1 a /pagina_uno. Inicia el servidor. Intenta acceder a http://localhost:3000/page1. ¿Funciona? Ahora intenta acceder a http://localhost:3000/pagina_uno. ¿Funciona? ¿Qué te dice esto sobre cómo el servidor asocia URLs con respuestas? Restaura el código.**
+> No, /page1 ya no funciona pero /pagina_uno sí. Me dice que el servidor utiliza la URL para saber a quién mandarle el request de ejecutar el js y html correspondiente.
+
+Asegúrate de que el servidor esté corriendo (npm start). Abre http://localhost:3000/page1 en una pestaña. Observa la terminal del servidor. ¿Qué mensaje ves? Anota el ID. Abre http://localhost:3000/page2 en OTRA pestaña. Observa la terminal. ¿Qué mensaje ves? ¿El ID es diferente? Cierra la pestaña de page1. Observa la terminal. ¿Qué mensaje ves? ¿Coincide el ID con el que anotaste? Cierra la pestaña de page2. Observa la terminal.
+> `Page1 ID:` A user connected - ID: ScyS1SRBIPNQ8pguAAAB
+> `Page2 ID:` A user connected - ID: gBR4nZ2rH5VIRCykAAAF
+> `Cerrar Page1:` User disconnected - ID: ScyS1SRBIPNQ8pguAAAB
+> `Cerrar Page2:` User disconnected - ID: gBR4nZ2rH5VIRCykAAAF
+> Sí, ambos IDs coinciden.  
+
