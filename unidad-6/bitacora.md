@@ -779,7 +779,14 @@ ___
     }
 
     h1 {
+      color: rgb(244, 255, 203);
       font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+
+      font-size: 20px;
       margin-bottom: 15px;
     }
 
@@ -795,7 +802,7 @@ ___
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       font-weight: 600;
       letter-spacing: 1px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .boton:hover {
@@ -817,13 +824,38 @@ ___
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    .instrucciones {
+      background: linear-gradient(45deg, #e4e6a463, #fe94572a);
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 10px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes pulsar {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    @keyframes rebote {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .boton {
+      animation: pulsar 2s ease-in-out infinite;
+    }
+
     .cajita {
       animation: fadeIn 0.6s ease-out;
+      animation: rebote 1.5s ease-in-out infinite;
     }
   </style>
 </head>
@@ -831,6 +863,13 @@ ___
   <div class="cajita">
     <h1>Holi :P</h1>
     <button class="boton" onclick="abrirVentanas()">🌿 empezar jueguito 🌿</button>
+
+    <h2>⭐ Instrucciones >:D⭐ </h2>
+
+    <div class="instrucciones">
+      cuando le des a jugar, van a salir 2 pestañas. Arrastra la de la izquierda (la amarilla) y no dejes que la otra te alcance D:
+    </div>
+    
     <div class="info">
       si no se abren las ventanas automáticamente, permite los popups plis :c
     </div>
@@ -1469,3 +1508,4 @@ server.listen(port, () => {
 });
 
 ```
+
