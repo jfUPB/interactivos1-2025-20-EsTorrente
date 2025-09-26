@@ -207,8 +207,17 @@ ___
 ### 📝 Apply :D
 
 Esto lo sufrí demasiado, porque creo que me salí mucho de la zona de comfort. Mi idea era, basado en eso de mandar la posición y las dimensiones, hacer un jueguito donde tú movieras una pestaña al arrastrarla con el mouse, y la otra la persiguiera automáticamente. Cuando fui a buscar cómo hacerlo, google decía que podía usar MoveBy(dx,dy) o MoveTo(x,y). PERO PROBLEMA!!!!!!!!!!!!!!!!!!!!!!!!!  
-Los navegadores BLOQUEAN que se pueda mover una pestaña. Tenía que sacarlas como un PopUp, y luego cambiar con html las dimesiones (para que salieran de una vez más chiquitas y se pudieran perseguir)  
+Los navegadores BLOQUEAN que se pueda mover una pestaña. Tenía que sacarlas como un PopUp, y luego cambiar con html las dimesiones (para que salieran de una vez más chiquitas y se pudieran perseguir).
+Para eso, creé un view de index.html (gracias César) que me sirviera para abrir page1 y page2. Le puse HTML bonito a todo, porque en el colegio me comí un año entero de aprender a hacer eso... pero tuve un problema D:  
+Quería cambiar el index para que reflejara cuando perdiera la persona, pero no conseguí implementar correctamente la parte de los sockets. Por algún motivo, asignar el socket con `socket = io();` ni especificar dentro de ella el localhost:3000 funcionó :(  
+No logré encontrar en google una respuesta clara, sólo me decía que era común... no sé si es que en HTML se implementa distinto a js?  
 
+En fin, algunos cambios que hice fue:
+- Agregar en `page2.js`, un socket.emit cuando la distancia entre bolitas era chiquita. Luego el server lo recibía y mandaba un io.emit de gameOver. Cuando las pestañas reciben el gameOver, se cierran al mismo tiempo.
+- También ahí, el movimiento se calcula con la posición X y Y de la otra ventana (el remotePageData). Saca dx y dy restantando la suya con la de la otra pestaña, y luego saca la hipotenusa de esos dos para tener la distancia general. Teniendo esa distancia, hace un check para ver si es un valor bajito. Si lo es, se emite ese mensaje de catch para triggerear el game over... si no, continua con el desplazamiento. Calcula la velocidad en X y Y (con la dirección, obvio), los nuevos targets, y usa MoveTo() para mover la ventanita hacia él. Todo esto está dentro de un setInterval.
+- Al page 1 no le puse nada más que lo del gameOver y cambiar el draw, porque la gracia es que tú la arrastras con el mouse... pero dejé lo que estaba en el otro programa nada más por mantener el mismo formato :P  
+__ 
+### ⭐ BOCETO (ANTES DE PONERLO BONITO) ⭐
 index.html (lo tuve que agregar para abrir las otras pestañas como popup. Está en la carpeta de public).
 ```p.html
 <!DOCTYPE html>
@@ -718,5 +727,745 @@ server.listen(port, () => {
   console.log(`Juega en http://localhost:${port}`);
 });
 ```
+___
 
+### ⭐ FINAL ⭐
 
+🌱 index.html
+
+```p.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Launcher :B</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a180a 0%, #07250c 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: background 1s ease;
+    }
+
+    body.empezado {
+      background: linear-gradient(135deg, #240f0f 0%, #7a8614 100%);
+    }
+
+    body.empezado .boton {
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+    }
+
+    .cajita {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .boton {
+      background: linear-gradient(135deg, #085e13 0%, #aac438 100%);
+      border: none;
+      color: white;
+      padding: 15px 35px;
+      font-size: 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 25px;
+    }
+
+    .boton:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+    }
+
+    .boton:active {
+      transform: translateY(-1px);
+    }
+
+    .info {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cajita {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="cajita">
+    <h1>Holi :P</h1>
+    <button class="boton" onclick="abrirVentanas()">🌿 empezar jueguito 🌿</button>
+    <div class="info">
+      si no se abren las ventanas automáticamente, permite los popups plis :c
+    </div>
+  </div>
+
+  <script>
+    let win1 = null;
+    let win2 = null;
+
+    function abrirVentanas() {
+
+      document.body.classList.add('empezado');
+      
+      win1 = window.open("/page1.html", "page1", "width=420,height=420,left=100,top=100");
+      win2 = window.open("/page2.html", "page2", "width=420,height=420,left=650,top=100");
+    }
+  </script>
+</body>
+</html>
+```
+
+🌱 page1.html
+
+```p.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Page 1</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.0/lib/p5.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ui {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    p {
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes pulsar {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .ui {
+      animation: pulsar 2s ease-in-out infinite;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="ui">
+    <h3>AAAAAH ARRÁSTRAME PARA HUIR</h3>
+    <p>DDDDDDDDDD:</p>
+  </div>
+  <main></main>
+  <script defer src="page1.js"></script>
+</body>
+</html>
+```
+
+🌱 page1.js
+
+```p.js
+let currentPageData = {
+  x: window.screenX,
+  y: window.screenY,
+  width: window.outerWidth,
+  height: window.outerHeight
+};
+
+let previousPageData = {
+  x: window.screenX,
+  y: window.screenY,
+  width: window.outerWidth,
+  height: window.outerHeight
+};
+
+let remotePageData = { x: 0, y: 0, width: 100, height: 100 };
+let point1 = [currentPageData.width / 2, currentPageData.height / 2];
+let socket;
+let isConnected = false;
+let hasRemoteData = false;
+let isFullySynced = false;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  frameRate(60);
+  socket = io();
+
+  socket.on('connect', () => {
+    console.log('Connected with ID:', socket.id);
+    isConnected = true;
+    socket.emit('win1update', currentPageData, socket.id);
+
+    setTimeout(() => {
+      socket.emit('requestSync');
+    }, 400);
+  });
+
+  socket.on('getdata', (response) => {
+    if (response && response.data && isValidRemoteData(response.data)) {
+      remotePageData = response.data;
+      hasRemoteData = true;
+      console.log('page1 recibió getdata:', remotePageData);
+      socket.emit('confirmSync');
+    }
+  });
+
+  socket.on('fullySynced', (synced) => {
+    isFullySynced = synced;
+    console.log('page1 fullySynced=', synced);
+  });
+
+  socket.on('peerDisconnected', () => {
+    hasRemoteData = false;
+    isFullySynced = false;
+    console.log('page1: peerDisconnected');
+  });
+
+  socket.on('disconnect', () => {
+    isConnected = false;
+    hasRemoteData = false;
+    isFullySynced = false;
+    console.log('page1 disconnected from server');
+  });
+
+  socket.on('gameOver', () => {
+    window.close();
+  });
+
+}
+
+function isValidRemoteData(data) {
+  return data &&
+         typeof data.x === 'number' &&
+         typeof data.y === 'number' &&
+         typeof data.width === 'number' && data.width > 0 &&
+         typeof data.height === 'number' && data.height > 0;
+}
+
+function checkWindowPosition() {
+  currentPageData = {
+    x: window.screenX,
+    y: window.screenY,
+    width: window.outerWidth,
+    height: window.outerHeight
+  };
+
+  if (currentPageData.x !== previousPageData.x ||
+      currentPageData.y !== previousPageData.y ||
+      currentPageData.width !== previousPageData.width ||
+      currentPageData.height !== previousPageData.height) {
+
+    point1 = [currentPageData.width / 2, currentPageData.height / 2];
+    socket.emit('win1update', currentPageData, socket.id);
+    previousPageData = { ...currentPageData };
+  }
+}
+
+function draw() {
+  background(214, 141, 69);
+
+  if (!isConnected) {
+    showStatus('Conectando al servidor...', color(255, 165, 0));
+    return;
+  }
+
+  if (!hasRemoteData) {
+    showStatus('Esperando datos de la otra ventana...', color(255, 165, 0));
+    return;
+  }
+
+  if (!isFullySynced) {
+    showStatus('Sincronizando...', color(255, 165, 0));
+    return;
+  }
+
+  //dibujar circulito inocente
+  drawCircle(point1[0], point1[1]);
+  checkWindowPosition();
+
+  //dibujar circulito malvado
+  let vector1 = createVector(currentPageData.x, currentPageData.y);
+  let vector2 = createVector(remotePageData.x, remotePageData.y);
+  let resultingVector = createVector(vector2.x - vector1.x, vector2.y - vector1.y);
+
+  stroke(255);
+  strokeWeight(10);
+  drawCircle(resultingVector.x + remotePageData.width / 2, resultingVector.y + remotePageData.height / 2);
+}
+
+function showStatus(message, statusColor) {
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  noStroke();
+  fill(0, 0, 0, 150);
+  rectMode(CENTER);
+  let textW = textWidth(message) + 30;
+  let textH = 36;
+  rect(width / 2, height / 6, textW, textH, 8);
+  fill(statusColor);
+  text(message, width / 2, height / 6);
+}
+
+function drawCircle(x, y) {
+  fill(255, 50, 50);
+  ellipse(x, y, 120, 120);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+```
+
+🌱 page2.html
+
+```p.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Page 2</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.0/lib/p5.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+      min-height: 100vh;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ui {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    p {
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes rebote {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .ui {
+      animation: rebote 1.5s ease-in-out infinite;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="ui">
+    <h3>CORRE QUE TE COMOOOO</h3>
+    <p> >:DDDDDDDDDDDDDDD</p>
+  </div>
+  <main></main>
+  <script defer src="/page2.js"></script>
+</body>
+</html>
+```
+
+🌱 page2.js
+
+```p.js
+let currentPageData = {
+  x: window.screenX,
+  y: window.screenY,
+  width: window.outerWidth,
+  height: window.outerHeight
+};
+
+let previousPageData = { ...currentPageData };
+let remotePageData = { x: 0, y: 0, width: 100, height: 100 };
+let point2 = [currentPageData.width / 2, currentPageData.height / 2];
+
+let socket;
+let isConnected = false;
+let hasRemoteData = false;
+let isFullySynced = false;
+
+const maxStep = 30; // pixels por tick (aka velocidad de movimiento)
+const moveInterval = 80; // ms entre movimiento
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  frameRate(60);
+  socket = io();
+
+  socket.on('connect', () => {
+    console.log('Connected with ID:', socket.id);
+    isConnected = true;
+    socket.emit('win2update', currentPageData, socket.id);
+
+    setTimeout(() => {
+      socket.emit('requestSync');
+    }, 400);
+  });
+
+  socket.on('getdata', (response) => {
+    if (response && response.data && isValidRemoteData(response.data)) {
+      remotePageData = response.data;
+      hasRemoteData = true;
+      console.log('page2 recibió getdata:', remotePageData);
+      socket.emit('confirmSync');
+    }
+  });
+
+  socket.on('fullySynced', (synced) => {
+    isFullySynced = synced;
+    console.log('page2 fullySynced=', synced);
+  });
+
+  socket.on('peerDisconnected', () => {
+    hasRemoteData = false;
+    isFullySynced = false;
+    console.log('page2: peerDisconnected');
+  });
+
+  socket.on('disconnect', () => {
+    isConnected = false;
+    hasRemoteData = false;
+    isFullySynced = false;
+    console.log('page2 disconnected from server');
+  });
+
+  socket.on('gameOver', () => {
+    console.log('fin del juego');
+    window.close();
+  });
+   
+  // ============== MOVIMIENTO AAAAAAAAAAAAAAAAAAAAA=======================
+  // si está sincronizado y hay datos, la ventanita se intenta mover
+  setInterval(() => {
+    if (!hasRemoteData || !isFullySynced) return;
+
+    //ubicación de la bolita buena
+    const targetX = remotePageData.x;
+    const targetY = remotePageData.y;
+
+    //ubicación current de bolita mala
+    const curX = window.screenX;
+    const curY = window.screenY;
+
+    // espacio en x y espacio en Y entre ellas, saco la hipotenusa de la suma de los dos al cuadrado :P
+    const dx = targetX - curX;
+    const dy = targetY - curY;
+    const dist = Math.hypot(dx, dy);
+
+    // aquí ya puedo ver la distancia en general, no solo en un eje
+    if (dist < 40) {
+    socket.emit('captured');
+    return;
+    }
+
+    const step = Math.min(maxStep, dist); //para no moverme más del max
+    const vx = (dx / dist) * step; // dx/dist me da la dirección (-1 o 1), * step lo mueve en esa distancia permitida
+    const vy = (dy / dist) * step;
+    const nextX = Math.round(curX + vx);
+    const nextY = Math.round(curY + vy);
+
+    window.moveTo(nextX, nextY);
+
+  }, moveInterval);
+}
+
+function isValidRemoteData(data) {
+  return data &&
+         typeof data.x === 'number' &&
+         typeof data.y === 'number' &&
+         typeof data.width === 'number' && data.width > 0 &&
+         typeof data.height === 'number' && data.height > 0;
+}
+
+function checkWindowPosition() {
+  currentPageData = {
+    x: window.screenX,
+    y: window.screenY,
+    width: window.outerWidth,
+    height: window.outerHeight
+  };
+
+  if (currentPageData.x !== previousPageData.x ||
+      currentPageData.y !== previousPageData.y ||
+      currentPageData.width !== previousPageData.width ||
+      currentPageData.height !== previousPageData.height) {
+
+    point2 = [currentPageData.width / 2, currentPageData.height / 2];
+    socket.emit('win2update', currentPageData, socket.id);
+    previousPageData = { ...currentPageData };
+  }
+}
+
+function draw() {
+  background(87, 21, 41);
+
+  if (!isConnected) {
+    showStatus('Conectando al servidor...', color(255, 165, 0));
+    return;
+  }
+
+  if (!hasRemoteData) {
+    showStatus('Esperando datos de la otra ventana...', color(255, 165, 0));
+    return;
+  }
+
+  if (!isFullySynced) {
+    showStatus('Sincronizando...', color(255, 165, 0));
+    return;
+  }
+
+  drawCircle(point2[0], point2[1]);
+  checkWindowPosition();
+
+  // posición aprox circulito inocente D:
+  let vector2 = createVector(remotePageData.x, remotePageData.y);
+  let vector1 = createVector(currentPageData.x, currentPageData.y);
+  let resultingVector = createVector(vector2.x - vector1.x, vector2.y - vector1.y);
+
+  stroke(255);
+  strokeWeight(10);
+  drawCircle(resultingVector.x + remotePageData.width / 2, resultingVector.y + remotePageData.height / 2);
+}
+
+function showStatus(message, statusColor) {
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  noStroke();
+  fill(0, 0, 0, 150);
+  rectMode(CENTER);
+  let textW = textWidth(message) + 30;
+  let textH = 36;
+  rect(width / 2, height / 6, textW, textH, 8);
+  fill(statusColor);
+  text(message, width / 2, height / 6);
+}
+
+function drawCircle(x, y) {
+  fill(180, 20, 20);
+  ellipse(x, y, 120, 120);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+```
+
+🌱 server.js
+
+```p.js
+const express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+const port = 3000;
+
+let page1 = { x: 0, y: 0, width: 100, height: 100 };
+let page2 = { x: 0, y: 0, width: 100, height: 100 };
+let connectedClients = new Map();
+let syncedClients = new Set();
+
+app.use(express.static(path.join(__dirname, 'views')));
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views', 'index.html')));
+app.get('/page1.html', (req, res) => res.sendFile(path.join(__dirname, 'views', 'page1.html')));
+app.get('/page2.html', (req, res) => res.sendFile(path.join(__dirname, 'views', 'page2.html')));
+app.get('/page1.js', (req, res) => res.sendFile(path.join(__dirname, 'views', 'page1.js')));
+app.get('/page2.js', (req, res) => res.sendFile(path.join(__dirname, 'views', 'page2.js')));
+
+io.on('connection', (socket) => {
+  console.log('A user connected - ID:', socket.id);
+  connectedClients.set(socket.id, { page: null, synced: false });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected - ID:', socket.id);
+    connectedClients.delete(socket.id);
+    syncedClients.delete(socket.id);
+    socket.broadcast.emit('peerDisconnected');
+    checkAndNotifySyncStatus();
+  });
+
+  socket.on('win1update', (window1, sendid) => {
+    if (isValidWindowData(window1)) {
+      page1 = window1;
+      connectedClients.set(socket.id, { page: 'page1', synced: false });
+      socket.broadcast.emit('getdata', { data: page1, from: 'page1' });
+      checkAndNotifySyncStatus();
+    }
+  });
+
+  socket.on('win2update', (window2, sendid) => {
+    if (isValidWindowData(window2)) {
+      page2 = window2;
+      connectedClients.set(socket.id, { page: 'page2', synced: false });
+      socket.broadcast.emit('getdata', { data: page2, from: 'page2' });
+      checkAndNotifySyncStatus();
+    }
+  });
+
+  socket.on('requestSync', () => {
+    const clientInfo = connectedClients.get(socket.id);
+    if (clientInfo?.page === 'page1') {
+      socket.emit('getdata', { data: page2, from: 'page2' });
+    } else if (clientInfo?.page === 'page2') {
+      socket.emit('getdata', { data: page1, from: 'page1' });
+    }
+  });
+
+  socket.on('confirmSync', () => {
+    syncedClients.add(socket.id);
+    const clientInfo = connectedClients.get(socket.id);
+    if (clientInfo) {
+      connectedClients.set(socket.id, { ...clientInfo, synced: true });
+    }
+    checkAndNotifySyncStatus();
+  });
+
+  // ========= CUANDO SE CAPTURA LA VENTANITA DE LA BOLITA BUENA =====
+  socket.on('captured', () => {
+    console.log('captured recibido de:', socket.id);
+    console.log('mandando gameOver a todos los clientes');
+    io.emit('gameOver');
+});
+  // ================================================================
+});
+
+function isValidWindowData(data) {
+  return data &&
+         typeof data.x === 'number' &&
+         typeof data.y === 'number' &&
+         typeof data.width === 'number' && data.width > 0 &&
+         typeof data.height === 'number' && data.height > 0;
+}
+
+function checkAndNotifySyncStatus() {
+  const page1Clients = Array.from(connectedClients.entries()).filter(([id, info]) => info.page === 'page1');
+  const page2Clients = Array.from(connectedClients.entries()).filter(([id, info]) => info.page === 'page2');
+
+  const bothPagesConnected = page1Clients.length > 0 && page2Clients.length > 0;
+  const allClientsSynced = Array.from(connectedClients.keys()).every(id => syncedClients.has(id));
+  const hasMinimumClients = connectedClients.size >= 2;
+
+  console.log(`Debug - Connected clients: ${connectedClients.size}, Page1: ${page1Clients.length}, Page2: ${page2Clients.length}, Synced: ${syncedClients.size}`);
+
+  if (bothPagesConnected && allClientsSynced && hasMinimumClients) {
+    io.emit('fullySynced', true);
+    console.log('All clients are fully synced');
+  } else {
+    io.emit('fullySynced', false);
+    console.log(`Sync status: pages=${bothPagesConnected}, synced=${allClientsSynced}, clients=${connectedClients.size}`);
+  }
+}
+
+server.listen(port, () => {
+  console.log(`Juega en http://localhost:${port}`);
+});
+
+```
