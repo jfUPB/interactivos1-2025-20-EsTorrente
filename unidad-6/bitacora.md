@@ -47,6 +47,7 @@ All clients are fully synced
 
 🌱 **Describe qué sucede en ambas páginas del navegador cuando mueves una de las ventanas. ¿Cambia algo visualmente? ¿Qué mensajes aparecen (si los hay) en la consola del navegador (usualmente accesible con F12 -> Pestaña Consola) y en la terminal del servidor?**
 > Al mover una ventana, la línea que conecta los círculos se ajusta en tiempo real, reflejando la nueva posición relativa entre ambas ventanas. Los círculos mantienen su posición en el centro de sus respectivas ventanas, pero la línea cambia de longitud y dirección.
+<a name="Capturas01"></a>
 > `Consola del navegador:` muestra el estado actual de sincronización, el id del que se conecta, y los datos reomotos recibidos.  
 <img width="681" height="275" alt="image" src="https://github.com/user-attachments/assets/16e8f3de-eae9-4b2a-a5aa-99009ba89da9" />  
 <img width="685" height="182" alt="image" src="https://github.com/user-attachments/assets/ca65165b-fa77-4135-ac25-3e420b144b6a" />  
@@ -100,12 +101,14 @@ ___
 > `Page2 ID:` A user connected - ID: gBR4nZ2rH5VIRCykAAAF
 > `Cerrar Page1:` User disconnected - ID: ScyS1SRBIPNQ8pguAAAB
 > `Cerrar Page2:` User disconnected - ID: gBR4nZ2rH5VIRCykAAAF
-> Sí, ambos IDs coinciden.  
+> Sí, ambos IDs coinciden.
 
+
+<a name="SocketEmit"></a>
 🌼 **Inicia el servidor y abre page1 y page2. Mueve la ventana de page1. Observa la terminal del servidor. ¿Qué evento se registra (win1update o win2update)? ¿Qué datos (Data:) ves? Mueve la ventana de page2. Observa la terminal. ¿Qué evento se registra ahora? ¿Qué datos ves? Experimento clave: cambia socket.broadcast.emit(‘getdata’, page1); por socket.emit(‘getdata’, page1); (quitando broadcast). Reinicia el servidor, abre ambas páginas. Mueve page1. ¿Se actualiza la visualización en page2? ¿Por qué sí o por qué no? (Pista: ¿A quién le envía el mensaje socket.emit?). Restaura el código a broadcast.emit.**
 > `Mover Page1:` Received win1update from ID: KJOROJ-q_VhNf1DwAAAB Data: { x: -4, y: 109, width: 237, height: 968 }  
 > `Mover Page2:` Received win2update from ID: zHdk-5FsKF6bfvFnAAAF Data: { x: 937, y: 119, width: 159, height: 968 }  
-> Al cambiar la línea de código, deja de actualizarse page2. socket.emit se envía el dato a sí mismo, mientras que broadcast.emit se lo manda a todos los clientes menos al que lo envía.  
+> Al cambiar la línea de código, deja de actualizarse page2. socket.emit se envía el dato solamente al cliente que está usando el socket (él mismo), mientras que broadcast.emit se lo manda a todos los clientes menos al que lo envía.  
 
 
 🌻 **Detén el servidor. Cambia const port = 3000; a const port = 3001;. Inicia el servidor. ¿Qué mensaje ves en la consola? ¿En qué puerto dice que está escuchando? Intenta abrir http://localhost:3000/page1. ¿Funciona? Intenta abrir http://localhost:3001/page1. ¿Funciona? ¿Qué aprendiste sobre la variable port y la función listen? Restaura el puerto a 3000.**
@@ -118,7 +121,7 @@ ___
 
 🌱 **Abre page2.html en tu navegador (con el servidor corriendo). Abre la consola de desarrollador (F12). Detén el servidor Node.js (Ctrl+C). Refresca la página page2.html. Observa la consola del navegador. ¿Ves algún error relacionado con la conexión? ¿Qué indica? Vuelve a iniciar el servidor y refresca la página. ¿Desaparecen los errores?**
 > Error que sale al desconectar:
-
+<a name="Capturas04"></a>
 <img width="700" height="58" alt="image" src="https://github.com/user-attachments/assets/60e39694-06eb-44ea-a208-b7cf803767cd" />
 
 > Mensaje al reconectar: 
@@ -150,6 +153,7 @@ Sync status: pages=false, synced=true, clients=2
 Agregué la línea `console.log('if funciona correctamente :)');` dentro del if. Cada frame que la ventana se moviera, se volvía a mandar el mensaje... lo que significa que el if se estaba ejecutando constantemente porque identificaba correctamente que las coordenadas anteriores eran distintas a las actuales. Mientras no se mueva, el mensaje no se manda. Por ende, ese código se corre solamente cuando es necesario... como el draw() en p5.js que se llama literal cada frame que corre el programa. Es más eficiente.    
 <img width="824" height="471" alt="image" src="https://github.com/user-attachments/assets/9283cd30-e6e2-4667-b55d-0e748556ded9" />
 
+<a name="BG04"></a>
 🌱 **Cambia el background(220) para que dependa de la distancia entre las ventanas. Puedes calcular la magnitud del resultingVector usando let distancia = resultingVector.mag(); y luego usa map() para convertir esa distancia a un valor de gris o color. background(map(distancia, 0, 1000, 255, 0)); (ajusta el rango 0-1000 según sea necesario). Inventa otra modificación creativa.**
 > La modificación creativa que hice fue agregarle un shake a la bolita para simular la tensión al alejarse y estirar la cuerda. Me quedó así :D
 ```program.js
@@ -1508,4 +1512,18 @@ server.listen(port, () => {
 });
 
 ```
+___
 
+# 📝 Autoevaluación
+
+### 🌱 **Nota Propuesta: 5**
+
+| Actividad | Evaluación | Justificación / Evidencias |
+|-----------|------------|----------------------------|
+| ⭐ 01 | Excelente | Utilicé correctamente GitBash para copiar el repo, ejecuté `npm install` y `npm start` sin problemas, y documenté todo el proceso de iniciar el servidor. Como evidencia en mi bitácora, identifiqué claramente los mensajes de la terminal, describí el comportamiento inicial de ambas páginas, y analicé la sincronización entre cliente y servidor. Incluí [capturas](#Capturas01) de pantalla que muestran la comunicación en tiempo real y los mensajes de consola, demostrando comprensión completa del flujo de datos. |
+| ⭐ 02 | Excelente | Considero que realicé un buen análisis e hipótesis sobre los procesos demostrados. Analicé ejemplos prácticos de relaciones cliente-servidor, comparé HTTP con protocolos seriales anteriores, y expliqué con claridad las diferencias entre HTML, CSS y JavaScript. Mi análisis sobre WebSockets vs HTTP tradicional y las ventajas de Node.js demuestra internalización de conceptos teóricos y capacidad de relacionarlos con aplicaciones prácticas. |
+| ⭐ 03 | Excelente | Completé todos los experimentos con el código del servidor, analizando correctamente las modificaciones controladas que validaron mi comprensión. Mi análisis del flujo de conexiones, IDs de socket, y comportamiento de [`socket.emit` vs `socket.broadcast.emit`](#SocketEmit) muestra dominio técnico del funcionamiento interno del servidor y capacidad de diagnóstico. |
+| ⭐ 04 | Excelente | Investigué en profundidad el comportamiento del lado del cliente mediante experimentación. Documenté errores de conexión, modifiqué la lógica de emisión de datos, y analicé el flujo de mensajes entre clientes. Mi modificación creativa del [background](#BG04) basado en distancia y la implementación del efecto de tensión demuestra no solo comprensión técnica sino también capacidad de aplicación creativa de los conceptos aprendidos (no puse captura porque no se vería el efecto de shake :( toca ejecutar el código). |
+| ⭐ 05 | Excelente | Desarrollé una aplicación original que supera los requisitos básicos. Como evidencia el código completo en mi bitácora, implementé un juego interactivo donde una ventana persigue a la otra, utilizando Socket.IO para comunicación en tiempo real. La solución incluye detección de colisión usando el cálculo entre la distancia de ambos, movimiento automático de la pestaña, cierre coordinado de ventanas, y una interfaz bonita. Demostré dominio de los tres componentes (cliente, servidor, comunicación) y capacidad de integrarlos en una experiencia cohesiva y funcional. |
+
+Considero que merezco el 5.0 por haber completado todas las actividades de manera exhaustiva, demostrado comprensión profunda de la comunicación en tiempo real, y aplicado los conceptos de manera creativa y técnicamente sólida en una aplicación original que integra todos los componentes del sistema. En cada actividad, analicé implicaciones técnicas, comparé alternativas, y reflexioné sobre ventajas/desventajas. Mi documentación de errores y soluciones demuestra pensamiento crítico y capacidad de resolución de problemas.
