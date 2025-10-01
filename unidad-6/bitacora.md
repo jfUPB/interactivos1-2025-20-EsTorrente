@@ -221,7 +221,7 @@ En fin, algunos cambios que hice fue:
 - También ahí, el movimiento se calcula con la posición X y Y de la otra ventana (el remotePageData). Saca dx y dy restantando la suya con la de la otra pestaña, y luego saca la hipotenusa de esos dos para tener la distancia general. Teniendo esa distancia, hace un check para ver si es un valor bajito. Si lo es, se emite ese mensaje de catch para triggerear el game over... si no, continua con el desplazamiento. Calcula la velocidad en X y Y (con la dirección, obvio), los nuevos targets, y usa MoveTo() para mover la ventanita hacia él. Todo esto está dentro de un setInterval.
 - Al page 1 no le puse nada más que lo del gameOver y cambiar el draw, porque la gracia es que tú la arrastras con el mouse... pero dejé lo que estaba en el otro programa nada más por mantener el mismo formato :P  
 __ 
-### ⭐ BOCETO (ANTES DE PONERLO BONITO) ⭐
+### ⭐ BOCETO (ANTES DE PONERLO BONITO)
 index.html (lo tuve que agregar para abrir las otras pestañas como popup. Está en la carpeta de public).
 ```p.html
 <!DOCTYPE html>
@@ -1527,4 +1527,5 @@ ___
 | ⭐ 05 | Excelente | Desarrollé una aplicación original que supera los requisitos básicos. Como evidencia el código completo en mi bitácora, implementé un juego interactivo donde una ventana persigue a la otra, utilizando Socket.IO para comunicación en tiempo real. La solución incluye detección de colisión usando el cálculo entre la distancia de ambos, movimiento automático de la pestaña, cierre coordinado de ventanas, y una interfaz bonita. Demostré dominio de los tres componentes (cliente, servidor, comunicación) y capacidad de integrarlos en una experiencia cohesiva y funcional. |
 
 Considero que merezco el 5.0 por haber completado todas las actividades de manera exhaustiva, demostrado comprensión profunda de la comunicación en tiempo real, y aplicado los conceptos de manera creativa y técnicamente sólida en una aplicación original que integra todos los componentes del sistema. En cada actividad, analicé implicaciones técnicas, comparé alternativas, y reflexioné sobre ventajas/desventajas. Mi documentación de errores y soluciones demuestra pensamiento crítico y capacidad de resolución de problemas.
+
 
