@@ -733,7 +733,7 @@ server.listen(port, () => {
 ```
 ___
 
-### ⭐ FINAL ⭐
+## ⭐ FINAL ⭐
 
 🌱 index.html
 
@@ -1527,3 +1527,4 @@ ___
 | ⭐ 05 | Excelente | Desarrollé una aplicación original que supera los requisitos básicos. Como evidencia el código completo en mi bitácora, implementé un juego interactivo donde una ventana persigue a la otra, utilizando Socket.IO para comunicación en tiempo real. La solución incluye detección de colisión usando el cálculo entre la distancia de ambos, movimiento automático de la pestaña, cierre coordinado de ventanas, y una interfaz bonita. Demostré dominio de los tres componentes (cliente, servidor, comunicación) y capacidad de integrarlos en una experiencia cohesiva y funcional. |
 
 Considero que merezco el 5.0 por haber completado todas las actividades de manera exhaustiva, demostrado comprensión profunda de la comunicación en tiempo real, y aplicado los conceptos de manera creativa y técnicamente sólida en una aplicación original que integra todos los componentes del sistema. En cada actividad, analicé implicaciones técnicas, comparé alternativas, y reflexioné sobre ventajas/desventajas. Mi documentación de errores y soluciones demuestra pensamiento crítico y capacidad de resolución de problemas.
+
