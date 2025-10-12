@@ -51,8 +51,10 @@ ___
   
 ___
 ### 📝 Actividad 04
-<img width="664" height="931" alt="image" src="https://github.com/user-attachments/assets/979e3615-2e27-46ee-8057-9e085a8a0b68" />  
+<img width="664" height="931" alt="image" src="https://github.com/user-attachments/assets/979e3615-2e27-46ee-8057-9e085a8a0b68" />    
+  
 ___
-
+ 
 ## 📝 Apply
+
 
